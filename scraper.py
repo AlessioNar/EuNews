@@ -56,17 +56,20 @@ for item in list_item:
     if type(article) is bs4.element.Tag:
         category = item.div.div.span.text
         pub_date = item.div.div.find_all("span", {"ngcontent-c1":""})[1].text
+        link = article.a['href']
+        if type(item.div.h3) is bs4.element.Tag:
+            title = item.div.h3.text
+        else:
+            title = ''
+        if type(item.div.p) is bs4.element.Tag:
+            snippet = item.div.p.text
+        else:
+            snippet = ''
+        titles.append(title)
+        pub_dates.append(pub_date)
+        links.append(link)
+        snippets.append(snippet)
 
-    article_containers = item.li.ul
-    for article in article_containers:
-        if type(article) is bs4.element.Tag:
-            title = article.div.h3.text
-            link = article.div.h3.a['href']
-            snippet = article.p.text
-            links.append(link)
-            titles.append(title)
-            snippets.append(snippet)
-            pub_dates.append(pub_date)
 
 df = pd.DataFrame(list(zip(titles, links, pub_dates, snippets)),
                columns =['title', 'link', 'pub_date','snippet'])
