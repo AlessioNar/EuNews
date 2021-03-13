@@ -20,6 +20,9 @@ def get_article_list(url, source, driver):
     if source == 'consigliodeuropait':
         article_containers = driver.find_elements_by_xpath('//div[@class="newsroom "]')[0]
         article_containers = article_containers.get_attribute('innerHTML')
+    if source == 'eucommission':
+        article_containers = driver.find_elements_by_xpath('//section[@id="news-block"]')[0]
+        article_containers = article_containers.get_attribute('innerHTML')
     if source == 'consiglioeuropeo':
         cookies = driver.find_elements_by_xpath('//span[@id="reject_cookies"]')[0]
         cookies.click()
@@ -29,8 +32,8 @@ def get_article_list(url, source, driver):
 
 sources = pd.read_csv("sources.csv")
 
-link = sources['link'][2]
-journal = sources['title'][2]
+link = sources['link'][1]
+journal = sources['title'][1]
 
 driver = webdriver.Firefox()
 
@@ -46,6 +49,36 @@ pub_dates = []
 snippets = []
 
 # Testing for consiglioeuropeo
+list_item = soup.section.ul.find_all("div", {"_ngcontent-c1": ""})
+
+for item in list_item:
+    article = item.li
+    if type(article) is bs4.element.Tag:
+        category = item.div.div.span.text
+        pub_date = item.div.div.find_all("span", {"ngcontent-c1":""})[1].text
+
+    article_containers = item.li.ul
+    for article in article_containers:
+        if type(article) is bs4.element.Tag:
+            title = article.div.h3.text
+            link = article.div.h3.a['href']
+            snippet = article.p.text
+            links.append(link)
+            titles.append(title)
+            snippets.append(snippet)
+            pub_dates.append(pub_date)
+
+df = pd.DataFrame(list(zip(titles, links, pub_dates, snippets)),
+               columns =['title', 'link', 'pub_date','snippet'])
+
+print(df)
+
+titles = []
+links = []
+pub_dates = []
+snippets = []
+
+# Testing for consiglioeuropeo
 list_item = soup.find_all("ul", {"class": "list-group"})
 for item in list_item:
     pub_date = item.li.h2.time['datetime']
@@ -53,13 +86,23 @@ for item in list_item:
     for article in article_containers:
         if type(article) is bs4.element.Tag:
             title = article.div.h3.text
-            titles.append(title)
+            link = article.div.h3.a['href']
             snippet = article.p.text
+            links.append(link)
+            titles.append(title)
             snippets.append(snippet)
+            pub_dates.append(pub_date)
 
-print(snippets)
+df = pd.DataFrame(list(zip(titles, links, pub_dates, snippets)),
+               columns =['title', 'link', 'pub_date','snippet'])
+
+print(df)
 
 
+len(links)
+len(titles)
+len(snippets)
+len(article_containers)
     # Here I have to find all the articles
 
 
