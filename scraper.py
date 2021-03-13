@@ -45,7 +45,7 @@ links = []
 pub_dates = []
 snippets = []
 
-# Testing for consigliodeuropait
+# Testing for consiglioeuropeo
 list_item = soup.find_all("ul", {"class": "list-group"})
 for item in list_item:
     pub_date = item.li.h2.time['datetime']
@@ -56,7 +56,7 @@ for item in list_item:
             titles.append(title)
             snippet = article.p.text
             snippets.append(snippet)
-    
+
 print(snippets)
 
 
