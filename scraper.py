@@ -28,12 +28,15 @@ def get_article_list(url, source, driver):
         cookies.click()
         article_containers = driver.find_elements_by_xpath('//div[@class="col-md-9 council-flexify-item pull-right"]')[0]
         article_containers = article_containers.get_attribute('innerHTML')
+    if source == 'esma':
+        article_containers = driver.find_elements_by_xpath('//table[@class="views-view-grid cols-2"]')[0]
+        article_containers = article_containers.get_attribute('innerHTML')
     return article_containers
 
 sources = pd.read_csv("sources.csv")
 
-link = sources['link'][1]
-journal = sources['title'][1]
+link = sources['link'][3]
+journal = sources['title'][3]
 
 driver = webdriver.Firefox()
 
@@ -131,6 +134,27 @@ for article in articles:
     links.append(link)
     pub_dates.append(pub_date)
     snippets.append(snippet)
+
+df = pd.DataFrame(list(zip(titles, links, pub_dates, snippets)),
+               columns =['title', 'link', 'pub_date', 'snippet'])
+
+print(df)
+
+# test esma
+
+# Here the articles are structured in rows/columns
+rows = soup.find_all("tr")
+for row in rows:
+    cols = row.find_all("td")
+    for col in cols:
+        title = col.h2.a.text
+        link = col.h2.a['href']
+        pub_date = col.find_all("div", class_="field field-type-ds")[0].text.strip()
+        snippet = col.find_all("div", class_="news_cartouche-text")[0].text.strip()
+        titles.append(title)
+        links.append(link)
+        pub_dates.append(pub_date)
+        snippets.append(snippet)
 
 df = pd.DataFrame(list(zip(titles, links, pub_dates, snippets)),
                columns =['title', 'link', 'pub_date', 'snippet'])
