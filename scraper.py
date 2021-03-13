@@ -20,17 +20,17 @@ def get_article_list(url, source, driver):
     if source == 'consigliodeuropait':
         article_containers = driver.find_elements_by_xpath('//div[@class="newsroom "]')[0]
         article_containers = article_containers.get_attribute('innerHTML')
+    if source == 'consiglioeuropeo':
+        cookies = driver.find_elements_by_xpath('//span[@id="reject_cookies"]')[0]
+        cookies.click()
+        article_containers = driver.find_elements_by_xpath('//div[@class="col-md-9 council-flexify-item pull-right"]')[0]
+        article_containers = article_containers.get_attribute('innerHTML')
     return article_containers
 
-
 sources = pd.read_csv("sources.csv")
-print(sources)
 
-for index, website in sources.iterrows():
-    print(website['title'])
-
-link = sources['link'][0]
-journal = sources['title'][0]
+link = sources['link'][2]
+journal = sources['title'][2]
 
 driver = webdriver.Firefox()
 
@@ -40,13 +40,35 @@ driver.close()
 
 soup = bs4.BeautifulSoup(page)
 
-articles = soup.find_all("div", {"class": "element clearfix"})
-
 titles = []
 links = []
 pub_dates = []
 snippets = []
+
 # Testing for consigliodeuropait
+list_item = soup.find_all("ul", {"class": "list-group"})
+for item in list_item:
+    pub_date = item.li.h2.time['datetime']
+    article_containers = item.li.ul
+    for article in article_containers:
+        if type(article) is bs4.element.Tag:
+            title = article.div.h3.text
+            titles.append(title)
+            snippet = article.p.text
+            snippets.append(snippet)
+    
+print(snippets)
+
+
+    # Here I have to find all the articles
+
+
+
+
+
+# Testing for consigliodeuropait
+articles = soup.find_all("div", {"class": "element clearfix"})
+
 
 for article in articles:
     title = article.h3.text.strip()
@@ -64,20 +86,7 @@ for article in articles:
     pub_dates.append(pub_date)
     snippets.append(snippet)
 
-print(snippets)
+df = pd.DataFrame(list(zip(titles, links, pub_dates, snippets)),
+               columns =['title', 'link', 'pub_date', 'snippet'])
 
-len(snippets)
-len(titles)
-len(links)
-len(pub_dates)
-
-
-html_source
-
-#assert "Python" in driver.title
-#elem = driver.find_element_by_name("q")
-#elem.clear()
-#elem.send_keys("pycon")
-#elem.send_keys(Keys.RETURN)
-#assert "No results found." not in driver.page_source
-#driver.close()
+print(df)
