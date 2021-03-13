@@ -20,3 +20,11 @@ for index, source in sources.iterrows():
     soup = bs4.BeautifulSoup(page)
     df = scrape_articles(soup, journal)
     print(df)
+
+link = sources['link'][5]
+journal = sources['title'][5]
+
+page = get_article_list(url = link, source = journal)
+soup = bs4.BeautifulSoup(page)
+
+df = scrape_articles(soup, journal)

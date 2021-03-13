@@ -9,19 +9,26 @@ def get_article_list(url, source):
 
     if source == 'consigliodeuropait':
         article_containers = driver.find_elements_by_xpath('//div[@class="newsroom "]')[0]
-        article_containers = article_containers.get_attribute('innerHTML')
-    if source == 'eucommission':
+    elif source == 'eucommission':
         article_containers = driver.find_elements_by_xpath('//section[@id="news-block"]')[0]
-        article_containers = article_containers.get_attribute('innerHTML')
-    if source == 'consiglioeuropeo':
+    elif source == 'consiglioeuropeo':
         cookies = driver.find_elements_by_xpath('//span[@id="reject_cookies"]')[0]
         cookies.click()
         article_containers = driver.find_elements_by_xpath('//div[@class="col-md-9 council-flexify-item pull-right"]')[0]
-        article_containers = article_containers.get_attribute('innerHTML')
-    if source == 'esma':
+    elif source == 'esma':
         article_containers = driver.find_elements_by_xpath('//table[@class="views-view-grid cols-2"]')[0]
-        article_containers = article_containers.get_attribute('innerHTML')
+    elif source == 'horizon2020':
+        article_containers = driver.find_elements_by_xpath('//ul[@class="listing listing--teaser"]')[0]
+    elif source == 'easme':
+        article_containers = driver.find_elements_by_xpath('//ul[@class="ecl-listing ecl-formatter-listing-plugin-style"]')[0]
+    elif source == 'eit':
+        article_containers = driver.find_elements_by_xpath('//div[@class="news eit-list"]')[0]
+    else:
+        print("There is not yet a retrieval method for this website")
+        driver.close()
+        return 1
 
+    article_containers = article_containers.get_attribute('innerHTML')
     driver.close()
 
     return article_containers

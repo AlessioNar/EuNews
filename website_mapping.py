@@ -75,6 +75,50 @@ def scrape_articles(soup, source):
                 links.append(link)
                 pub_dates.append(pub_date)
                 snippets.append(snippet)
+
+    elif source == 'horizon2020':
+        articles = soup.findAll("li", class_="listing__item")
+        for article in articles:
+            title = article.div.div.h2.a.text
+            link = article.div.div.h2.a['href']
+            container = article.div.div.div
+            second_container = container.findAll("div", class_="required-fields meta group-meta field-group-meta_wrapper")[0]
+            pub_date = second_container.div.div.div.span['content']
+            second_container = container.findAll("div", class_="field field-name-field-newsroom-teaser field-type-text-long field-label-hidden")[0]
+            snippet = second_container.div.div.text
+            titles.append(title)
+            links.append(link)
+            pub_dates.append(pub_date)
+            snippets.append(snippet)
+
+    elif source == 'easme':
+        articles = soup.findAll("li")
+        for article in articles
+            container = article.findAll("div", class_="row")[0]
+            container = container.findAll("div", class_="col-xs-12 col-sm-9")[0]
+            title = container.a.h3.text
+            link = container.a['href']
+            snippet_container = container.findAll("div", class_="ecl-list-item__detail ecl-paragraph")[0]
+            snippet = snippet_container.text
+            date_container = container.findAll("div", class_="ecl-meta ecl-meta--three-columns")[0]
+            # This needs to be fixed, now it returns None
+            pub_date = date_container.span.text
+            titles.append(title)
+            links.append(link)
+            pub_dates.append(pub_date)
+            snippets.append(snippet)
+
+    elif source == 'eit':
+        articles = soup.findAll("li")
+        for article in articles:
+            title = article.a.text
+            link = article.a['href']
+            pub_date = article.span.text
+            snippet = ''
+            titles.append(title)
+            links.append(link)
+            pub_dates.append(pub_date)
+            snippets.append(snippet)
     else:
         print("There is not yet a retrieval method for this website")
         return 1
