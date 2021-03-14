@@ -5,6 +5,8 @@ from db_operations import most_recent_date
 
 def scrape(journal, link):
     print("Scraping " + journal)
+    ## Here I could create a while loop that integrates a condition when we reach the date of the last last_update
+    ## It stops paginating
     try:
         soup = get_article_list(url = link, source = journal)
     except:
