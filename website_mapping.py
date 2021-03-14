@@ -1,5 +1,9 @@
 import bs4
 import pandas as pd
+from datetime import datetime
+import dateparser
+import numpy as np
+
 def scrape_articles(soup, source):
 
     titles = []
@@ -23,6 +27,7 @@ def scrape_articles(soup, source):
                     snippet = item.div.p.text
                 else:
                     snippet = ''
+
                 titles.append(title)
                 pub_dates.append(pub_date)
                 links.append(link)
@@ -54,6 +59,7 @@ def scrape_articles(soup, source):
             else:
                 origin = ''
             pub_date = upper.findAll("span", {"class":"date"})[0]
+            pub_date = pub_date.text
             location = upper.findAll("span", {"class":"location"})[0]
             snippet = article.p.text.strip()
             titles.append(title)
@@ -93,7 +99,7 @@ def scrape_articles(soup, source):
 
     elif source == 'easme':
         articles = soup.findAll("li")
-        for article in articles
+        for article in articles:
             container = article.findAll("div", class_="row")[0]
             container = container.findAll("div", class_="col-xs-12 col-sm-9")[0]
             title = container.a.h3.text
@@ -122,6 +128,10 @@ def scrape_articles(soup, source):
     else:
         print("There is not yet a retrieval method for this website")
         return 1
+
+    for index, one_date in enumerate(pub_dates):
+        pub_dates[index] = dateparser.parse(one_date)
+        pub_dates[index] = np.datetime64(pub_dates[index]).astype(datetime)
 
     df = pd.DataFrame(list(zip(titles, links, pub_dates, snippets)),
                     columns =['title', 'link', 'pub_date', 'snippet'])

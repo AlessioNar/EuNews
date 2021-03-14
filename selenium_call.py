@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from time import sleep
+import bs4
 
 def get_article_list(url, source):
     driver = webdriver.Firefox()
@@ -29,6 +30,7 @@ def get_article_list(url, source):
         return 1
 
     article_containers = article_containers.get_attribute('innerHTML')
+    soup = bs4.BeautifulSoup(article_containers, 'lxml')
     driver.close()
 
-    return article_containers
+    return soup
