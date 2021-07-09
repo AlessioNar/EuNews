@@ -4,7 +4,7 @@ from parse import scrape_articles
 
 #
 sources = pd.read_csv('sources.csv')
-sources = pd.DataFrame(sources.iloc[18]).transpose()
+sources = pd.DataFrame(sources.iloc[20]).transpose()
 
 for i, source in sources.iterrows():
 

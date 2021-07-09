@@ -198,6 +198,29 @@ def scrape_articles(soup, source):
             snippet = item.text.strip()
             snippets.append(snippet)
 
+    elif source == 'parlamento_europeo_thinktank_eventi':
+        list_item = soup.find_all("h3", {"class":"nobackground expand_collapse_btn"})
+        for item in list_item:
+            title = item.text.strip()
+            print(title)
+            link = item.a['href']
+            pub_date = str(item.a.div.div.div.span.previous_sibling)
+            snippet = item.a.div.div.div.next_sibling.text.strip()
+            titles.append(title)
+            links.append(link)
+            pub_dates.append(pub_date)
+            snippets.append(snippet)
+
+
+        list_item = soup.find_all("li", {"class":"eventDate"})
+        for item in list_item:
+            pub_date = item.text.strip()
+            pub_dates.append(pub_date)
+        list_item = soup.find_all("div", {"class":"summary no-padding"})
+        for item in list_item:
+            snippet = item.text.strip()
+            snippets.append(snippet)
+
 
     elif source == 'consigliodeuropait':
         articles = soup.find_all("div", {"class": "element clearfix"})

@@ -40,6 +40,8 @@ def get_article_list(url, source):
         article_containers = driver.find_elements_by_xpath('//div[@class="news eit-list"]')[0]
     elif source == 'cor':
         article_containers = driver.find_elements_by_xpath('//div[@class="cbq-layout-main"]')[0]
+    elif source == 'parlamento_europeo_thinktank_eventi':
+        article_containers = driver.find_elements_by_xpath('//div[@class="listcontent nobackground"]')[0]
     else:
         print("There is not yet a retrieval method for this website")
         driver.close()
