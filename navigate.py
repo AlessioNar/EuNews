@@ -22,9 +22,9 @@ def get_article_list(url, source):
         article_containers = driver.find_elements_by_xpath('//div[@class="view-grouping-content info-box light-grey-bg"]')[0]
     elif source == 'eib':
         article_containers = driver.find_elements_by_xpath('//div[@class="search-filter__results row card-row-items"]')[0]
-    elif source =='euparliament':
+    elif source == 'euparliament':
         article_containers = driver.find_elements_by_xpath('//div[@class="ep_gridrow ep-o_productlist"]')[0]
-    elif source =='eif':
+    elif source == 'eif':
         article_containers = driver.find_elements_by_xpath('//div[@class="span7 border_left news_centre_ news_centre_press_releases_"]')[0]
     elif source == 'consiglioeuropeo':
         cookies = driver.find_elements_by_xpath('//span[@id="reject_cookies"]')[0]
@@ -50,11 +50,18 @@ def get_article_list(url, source):
         article_containers = driver.find_elements_by_xpath('//div[@class="view-content"]')[0]
     elif source == 'enicbcmed':
         article_containers = driver.find_elements_by_xpath('//div[@class="block-items"]')[0]
+    elif source == 'apre':
+        article_containers = driver.find_elements_by_xpath('//main[@class="site-main"]')[0]
+    elif source == 'cpmr':
+        article_containers = driver.find_elements_by_xpath('//div[@id="posts-container"]')[0]
+    elif source == 'earlall':
+        article_containers = driver.find_element_by_xpath('//div[@id="content-full"]')
+    elif source == 'eea':
+        article_containers = driver.find_element_by_xpath('//div[@class="entries"]')
     else:
         print("There is not yet a retrieval method for this website")
         driver.close()
         return 1
-
     article_containers = article_containers.get_attribute('innerHTML')
     soup = bs4.BeautifulSoup(article_containers, 'lxml')
     driver.close()
