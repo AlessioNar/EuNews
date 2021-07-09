@@ -33,20 +33,6 @@ def scrape_articles(soup, source):
                 links.append(link)
                 snippets.append(snippet)
 
-    elif source == 'consiglioeuropeo':
-        list_item = soup.find_all("ul", {"class": "list-group"})
-        for item in list_item:
-            pub_date = item.li.h2.time['datetime']
-            article_containers = item.li.ul
-            for article in article_containers:
-                if type(article) is bs4.element.Tag:
-                    title = article.div.h3.text
-                    link = article.div.h3.a['href']
-                    snippet = article.p.text
-                    links.append(link)
-                    titles.append(title)
-                    snippets.append(snippet)
-                    pub_dates.append(pub_date)
     elif source == 'eusalp':
         list_item = soup.find_all("h3", {"class": "views-field views-field-title event-box-title"})
         for item in list_item:
@@ -202,10 +188,6 @@ def scrape_articles(soup, source):
             snippets.append(snippet)
 
         list_item = soup.find_all('div', {'class':"event_content"})
-        #for item in list_item:
-            #snippet = ''#item.text.strip()
-            #print(snippet)
-            #snippets.append(snippet)
     elif source == 'urbact':
         list_item = soup.find_all('h2', {'class':'node__title node-title'})
         for item in list_item:
@@ -263,7 +245,21 @@ def scrape_articles(soup, source):
         for item in list_item:
             pub_date = item['datetime']
             pub_dates.append(pub_date)
-
+    elif source == 'apre':
+        list_item = soup.find_all('h2', {'class':'entry-title'})
+        for item in list_item:
+            title = item.text.strip()
+            link = item.a['href']
+            titles.append(title)
+            links.append(link)
+        list_item = soup.find_all('span', {'class':'published'})
+        for item in list_item:
+            pub_date = item.text.strip()
+            pub_dates.append(pub_date)
+        list_item = soup.find_all('div', {'id':'bottom-blog'})
+        for item in list_item:
+            snippet = item.text.strip()
+            snippets.append(snippet)
     elif source == 'consigliodeuropait':
         articles = soup.find_all("div", {"class": "element clearfix"})
         for article in articles:
@@ -282,7 +278,44 @@ def scrape_articles(soup, source):
             links.append(link)
             pub_dates.append(pub_date)
             snippets.append(snippet)
-
+    elif source == 'consiglioeuropeo':
+        list_item = soup.find_all("ul", {"class": "list-group"})
+        for item in list_item:
+            pub_date = item.li.h2.time['datetime']
+            article_containers = item.li.ul
+            for article in article_containers:
+                if type(article) is bs4.element.Tag:
+                    title = article.div.h3.text
+                    link = article.div.h3.a['href']
+                    snippet = article.p.text
+                    links.append(link)
+                    titles.append(title)
+                    snippets.append(snippet)
+                    pub_dates.append(pub_date)
+    elif source == 'cpmr':
+        list_item = soup.find_all('div', {'class':'fusion-post-content post-content'})
+        for item in list_item:
+            title = item.h2.text.strip()
+            link = item.h2.a['href']
+            snippet = item.div.p.text.strip()
+            titles.append(title)
+            links.append(link)
+            snippets.append(snippet)
+        list_item = soup.find_all('div', {'class':'fusion-date-box'})
+        for item in list_item:
+            pub_date = item.text.strip()
+            pub_dates.append(pub_date)
+    elif source == 'earlall':
+        list_item = soup.find_all('li')
+        for item in list_item:
+            title = item.h3.text.strip()
+            link = item.a['href']
+            snippet = item.p.find_next().find_next().text
+            pub_date = item.p.find_next().find_next().find_next().text
+            titles.append(title)
+            links.append(link)
+            snippets.append(snippet)
+            pub_dates.append(pub_date)
     elif source == 'esma':
         # Here the articles are structured in rows/columns
         rows = soup.find_all("tr")
@@ -297,7 +330,6 @@ def scrape_articles(soup, source):
                 links.append(link)
                 pub_dates.append(pub_date)
                 snippets.append(snippet)
-
     elif source == 'horizon2020':
         articles = soup.findAll("li", class_="listing__item")
         for article in articles:
@@ -312,7 +344,6 @@ def scrape_articles(soup, source):
             links.append(link)
             pub_dates.append(pub_date)
             snippets.append(snippet)
-
     elif source == 'easme':
         articles = soup.findAll("li")
         for article in articles:
@@ -329,7 +360,6 @@ def scrape_articles(soup, source):
             links.append(link)
             pub_dates.append(pub_date)
             snippets.append(snippet)
-
     elif source == 'eit':
         articles = soup.findAll("li")
         for article in articles:
@@ -344,14 +374,10 @@ def scrape_articles(soup, source):
     else:
         print("There is not yet a retrieval method for this website")
         return 1
-
     for index, one_date in enumerate(pub_dates):
         pub_dates[index] = dateparser.parse(one_date)
         pub_dates[index] = np.datetime64(pub_dates[index]).astype(datetime)
-
     df = pd.DataFrame(list(zip(titles, links, pub_dates, snippets)),
                     columns =['title', 'link', 'pub_date', 'snippet'])
-
     df['source'] = source
-
     return df
