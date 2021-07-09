@@ -3,7 +3,7 @@ from navigate import get_article_list
 from parse import scrape_articles
 
 sources = pd.read_csv('sources.csv')
-sources = pd.DataFrame(sources.iloc[25]).transpose()
+sources = pd.DataFrame(sources.iloc[38]).transpose()
 url = sources['link'].iloc[0]
 
 for i, source in sources.iterrows():

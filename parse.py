@@ -250,6 +250,19 @@ def scrape_articles(soup, source):
         for item in list_item:
             pub_date = item.text.strip()
             pub_dates.append(pub_date)
+    elif source == 'enicbcmed':
+        list_item = soup.find_all('div', {'class':'block-body-content'})
+        for item in list_item:
+            title = item.a.h6.text.strip()
+            link = item.a['href']
+            snippet = item.p.text.strip()
+            titles.append(title)
+            links.append(links)
+            snippets.append(snippet)
+        list_item = soup.find_all('time', {'class':'datetime'})
+        for item in list_item:
+            pub_date = item['datetime']
+            pub_dates.append(pub_date)
 
     elif source == 'consigliodeuropait':
         articles = soup.find_all("div", {"class": "element clearfix"})

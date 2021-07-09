@@ -48,6 +48,8 @@ def get_article_list(url, source):
         article_containers = driver.find_elements_by_xpath('//div[@class="view view-news view-id-news view-display-id-default view-dom-id-9ca0c5368c92bd6815d065517c203a8b jquery-once-1-processed"]')[0]
     elif source == 'europeanagency':
         article_containers = driver.find_elements_by_xpath('//div[@class="view-content"]')[0]
+    elif source == 'enicbcmed':
+        article_containers = driver.find_elements_by_xpath('//div[@class="block-items"]')[0]
     else:
         print("There is not yet a retrieval method for this website")
         driver.close()
