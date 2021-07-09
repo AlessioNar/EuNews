@@ -40,6 +40,14 @@ def get_article_list(url, source):
         article_containers = driver.find_elements_by_xpath('//div[@class="news eit-list"]')[0]
     elif source == 'cor':
         article_containers = driver.find_elements_by_xpath('//div[@class="cbq-layout-main"]')[0]
+    elif source == 'parlamento_europeo_thinktank_eventi':
+        article_containers = driver.find_elements_by_xpath('//div[@class="listcontent nobackground"]')[0]
+    elif source == 'urbact':
+        article_containers = driver.find_elements_by_xpath('//div[@class="panel-pane pane-views-panes pane-urbact-articles-article-list-news"]')[0]
+    elif source == 'interact':
+        article_containers = driver.find_elements_by_xpath('//div[@class="view view-news view-id-news view-display-id-default view-dom-id-9ca0c5368c92bd6815d065517c203a8b jquery-once-1-processed"]')[0]
+    elif source == 'europeanagency':
+        article_containers = driver.find_elements_by_xpath('//div[@class="view-content"]')[0]
     else:
         print("There is not yet a retrieval method for this website")
         driver.close()

@@ -47,7 +47,6 @@ def scrape_articles(soup, source):
                     titles.append(title)
                     snippets.append(snippet)
                     pub_dates.append(pub_date)
-
     elif source == 'eusalp':
         list_item = soup.find_all("h3", {"class": "views-field views-field-title event-box-title"})
         for item in list_item:
@@ -65,7 +64,6 @@ def scrape_articles(soup, source):
         for item in list_item:
             snippet = item.span.text
             snippets.append(snippet)
-
     elif source == 'areflh':
         list_item = soup.find_all("h3", {"class": "el-title uk-card-title uk-margin-top uk-margin-remove-bottom"})
         for item in list_item:
@@ -90,7 +88,6 @@ def scrape_articles(soup, source):
             else:
                 snippet = item.div.text
             snippets.append(snippet)
-
     elif source == 'eurostat':
         list_item = soup.find_all("div", {"class": "product-title"})
         for item in list_item:
@@ -106,7 +103,6 @@ def scrape_articles(soup, source):
         for item in list_item:
             pub_date = item.text.strip()
             pub_dates.append(pub_date)
-
     elif source == 'imi':
         list_item = soup.find_all("div", {"class": "views-row article-row"})
 
@@ -125,7 +121,6 @@ def scrape_articles(soup, source):
         for item in list_item:
             snippet = item.text
             snippets.append(snippet)
-
     elif source == 'eib':
         list_item = soup.find_all("h3", {"class": "card-row-title margin-right-20"})
         for item in list_item:
@@ -158,7 +153,6 @@ def scrape_articles(soup, source):
         for item in list_item:
             pub_date = item['datetime']
             pub_dates.append(pub_date)
-
     elif source == 'eif':
         list_item = soup.find_all("h3", {"class":"corner"})
         for item in list_item:
@@ -175,7 +169,6 @@ def scrape_articles(soup, source):
         for item in list_item:
             snippet = item.text.strip()
             snippets.append(snippet)
-
     elif source == 'cor':
         list_item = soup.find_all("div", {"class":"col-md-6 card"})
         for item in list_item:
@@ -187,8 +180,6 @@ def scrape_articles(soup, source):
             links.append(link)
             pub_dates.append(pub_date)
             snippets.append(snippet)
-
-
         list_item = soup.find_all("li", {"class":"eventDate"})
         for item in list_item:
             pub_date = item.text.strip()
@@ -197,7 +188,68 @@ def scrape_articles(soup, source):
         for item in list_item:
             snippet = item.text.strip()
             snippets.append(snippet)
+    elif source == 'parlamento_europeo_thinktank_eventi':
+        list_item = soup.find_all("h3", {"class":"nobackground expand_collapse_btn"})
+        for item in list_item:
+            title = item.text.strip()
+            link = ''
+            pub_date = ''
+            snippet = ''#item.text.strip()
 
+            titles.append(title)
+            links.append(link)
+            pub_dates.append(pub_date)
+            snippets.append(snippet)
+
+        list_item = soup.find_all('div', {'class':"event_content"})
+        #for item in list_item:
+            #snippet = ''#item.text.strip()
+            #print(snippet)
+            #snippets.append(snippet)
+    elif source == 'urbact':
+        list_item = soup.find_all('h2', {'class':'node__title node-title'})
+        for item in list_item:
+            title = item.a.text
+            link = item.a['href']
+            titles.append(title)
+            links.append(link)
+        list_item = soup.find_all('time', {'pubdate':''})
+        for item in list_item:
+            pub_date = item['datetime']
+            pub_dates.append(pub_date)
+        list_item = soup.find_all('div', {'class':'field-item even'})
+        for item in list_item:
+            snippet = item.text.strip()
+            if snippet != '':
+                snippets.append(snippet)
+    elif source == 'interact':
+        list_item = soup.find_all('div', {'class':'news_title'})
+        for item in list_item:
+            title = item.text
+            link = item.a['href']
+            titles.append(title)
+            links.append(link)
+        list_item = soup.find_all('span', {'class':'date-display-single'})
+        for item in list_item:
+            pub_date = item.text.strip()
+            pub_dates.append(pub_date)
+            snippet = ''
+            snippets.append(snippet)
+    elif source == 'europeanagency':
+        list_item = soup.find_all('h3', {'class':'views-field views-field-title'})
+        for item in list_item:
+            title = item.a.text.strip()
+            link = item.a['href']
+            snippet = item.next_sibling
+            titles.append(title)
+            links.append(links)
+            if snippet != '':
+                snippets.append(snippet)
+
+        list_item = soup.find_all('footer', {'class':'views-field views-field-created'})
+        for item in list_item:
+            pub_date = item.text.strip()
+            pub_dates.append(pub_date)
 
     elif source == 'consigliodeuropait':
         articles = soup.find_all("div", {"class": "element clearfix"})
