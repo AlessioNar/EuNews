@@ -371,6 +371,55 @@ def scrape_articles(soup, source):
             links.append(link)
             pub_dates.append(pub_date)
             snippets.append(snippet)
+    elif source == 'eea':
+        list_item = soup.find_all('div', {'class':'tileItem visualIEFloatFix'})
+        for item in list_item:
+            title = item.a.img['title']
+            link = item.a['href']
+            pub_date = item.div.span.text
+            snippet = item.p.span.text
+            titles.append(title)
+            links.append(link)
+            pub_dates.append(pub_date)
+            snippets.append(snippet)
+    elif source == 'espon':
+        list_item = soup.find_all('div', {'class':'views-field views-field-title'})
+        for item in list_item:
+            title = item.span.a.text
+            link = item.span.a['href']
+            titles.append(title)
+            links.append(link)
+        list_item = soup.find_all('div', {'class':'views-field views-field-created'})
+        for item in list_item:
+            pub_date = item.span.small.span.next_sibling
+            pub_dates.append(pub_date)
+        list_item = soup.find_all('li')
+        for item in list_item:
+            snippet = item.find_next('div').find_next('div').find_next('div').find_next('div').find_next('div').find_next('div').find_next('div').p.text.strip()
+            snippets.append(snippet)
+    elif source == 'euregha':
+        list_item = soup.find_all('article')
+        for item in list_item:
+            title = item.h4.text
+            link = item.h4.a['href']
+            pub_date = item.p.text
+            snippet = ''
+            titles.append(title)
+            links.append(links)
+            pub_dates.append(pub_date)
+            snippets.append(snippet)
+    elif source == 'interreg':
+        list_item = soup.find_all('section', {'class','search-result__item search-result__item--news'})
+        for item in list_item:
+            title = item.find('div', {'class':'search-result__item__title'})
+            link = title.a['href']
+            title = title.a.text.strip()
+            pub_date = item.find('span', {'class': 'bold'}).text
+            snippet = item.find('div', {'class':'clamp-this__2-lines'}).text.strip()
+            titles.append(title)
+            links.append(link)
+            pub_dates.append(pub_date)
+            snippets.append(snippet)
     else:
         print("There is not yet a retrieval method for this website")
         return 1
