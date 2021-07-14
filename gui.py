@@ -167,8 +167,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if selected:
             model = self.tableview.model()
             index = model.index(selected[0].row(), 3)
-            url = str(model.data(index, QtCore.Qt.DisplayRole))
 
+            url = str(model.data(index, QtCore.Qt.DisplayRole))
+            print(url)
             ## This works I just need to find the url
             self.pdf.settings().setAttribute(QWebEngineSettings.PluginsEnabled, True)
             self.pdf.load(QtCore.QUrl(url))
