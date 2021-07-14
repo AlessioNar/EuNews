@@ -450,7 +450,7 @@ def scrape_articles(soup, source):
     for index, one_date in enumerate(pub_dates):
         pub_dates[index] = dateparser.parse(one_date)
         pub_dates[index] = np.datetime64(pub_dates[index]).astype(datetime)
-    df = pd.DataFrame(list(zip(titles, links, pub_dates, snippets)),
-                    columns =['title', 'link', 'pub_date', 'snippet'])
+    df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
+                    columns =['title', 'pub_date', 'snippet', 'link'])
     df['source'] = source
     return df
