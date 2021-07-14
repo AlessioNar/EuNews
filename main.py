@@ -9,10 +9,16 @@ import websites
 
 
 sources = pd.read_csv('sources.csv')
+sources = sources.iloc[2].transpose()
 for i, source in sources.iterrows():
     if source['website'] == 'apre':
         driver = webdriver.Firefox()
         df = websites.apre(source['link'], driver)
+        driver.close()
+    elif source['website'] == 'areflh':
+        driver = webdriver.Firefox()
+        df = websites.areflh(source['link'], driver)
+    elif source['website'] = 'consigliodeuropait'
         print(df)
 
     try:

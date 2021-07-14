@@ -33,3 +33,43 @@ def apre(url, driver):
     df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
                     columns =['title', 'pub_date', 'snippet', 'link'])
     return df
+
+def areflh(url, driver):
+    titles = []
+    links = []
+    pub_dates = []
+    snippets = []
+    driver.get(url)
+    article_containers = driver.find_elements_by_xpath('//div[@class="uk-container"]')[1]
+    article_containers = article_containers.get_attribute('innerHTML')
+    soup = bs4.BeautifulSoup(article_containers, 'lxml')
+
+    list_item = soup.find_all("h3", {"class": "el-title uk-card-title uk-margin-top uk-margin-remove-bottom"})
+    for item in list_item:
+        title = item.text
+        titles.append(title)
+
+    list_item = soup.find_all("a", {"class": "el-item uk-card uk-card-default uk-card-hover uk-link-toggle uk-display-block"})
+    for item in list_item:
+        link = 'https://www.areflh.org' + item['href']
+        links.append(link)
+
+    list_item = soup.find_all("div", {"class": "el-meta uk-text-meta uk-margin-top"})
+    for item in list_item:
+        pub_date = item.text
+        pub_dates.append(pub_date)
+
+    list_item = soup.find_all("div", {"class": "el-content uk-panel uk-margin-top"})
+    for item in list_item:
+        if item.p:
+            snippet = item.p.text
+        else:
+            snippet = item.div.text
+        snippets.append(snippet)
+
+    for index, one_date in enumerate(pub_dates):
+        pub_dates[index] = dateparser.parse(one_date)
+        pub_dates[index] = np.datetime64(pub_dates[index]).astype(datetime)
+    df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
+                    columns =['title', 'pub_date', 'snippet', 'link'])
+    return df
