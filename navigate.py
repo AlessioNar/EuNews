@@ -66,6 +66,8 @@ def get_article_list(url, source):
         article_containers = driver.find_elements_by_xpath('//div[@class="content-area"]')[0]
     elif source == 'jrc':
         article_containers = driver.find_elements_by_xpath('//div[@class="block block-system panel panel-default clearfix"]')[0]
+    elif source == 'promis':
+        article_containers = driver.find_element_by_xpath('//div[@id="boxNotizieArchivio"]')
     else:
         print("There is not yet a retrieval method for this website")
         driver.close()

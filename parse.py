@@ -18,7 +18,7 @@ def scrape_articles(soup, source):
             if type(article) is bs4.element.Tag:
                 category = item.div.div.span.text
                 pub_date = item.div.div.find_all("span", {"ngcontent-c1":""})[1].text
-                link = article.a['href']
+                link = 'https://ec.europa.eu/commission/presscorner/' + article.a['href']
                 if type(item.div.h3) is bs4.element.Tag:
                     title = item.div.h3.text
                 else:
@@ -37,7 +37,7 @@ def scrape_articles(soup, source):
         list_item = soup.find_all("h3", {"class": "views-field views-field-title event-box-title"})
         for item in list_item:
             title = item.span.a.text
-            link = item.span.a['href']
+            link = 'https://www.alpine-region.eu' + item.span.a['href']
             links.append(link)
             titles.append(title)
 
@@ -54,12 +54,11 @@ def scrape_articles(soup, source):
         list_item = soup.find_all("h3", {"class": "el-title uk-card-title uk-margin-top uk-margin-remove-bottom"})
         for item in list_item:
             title = item.text
-            print(title)
             titles.append(title)
 
         list_item = soup.find_all("a", {"class": "el-item uk-card uk-card-default uk-card-hover uk-link-toggle uk-display-block"})
         for item in list_item:
-            link = item['href']
+            link = 'https://www.areflh.org' + item['href']
             links.append(link)
 
         list_item = soup.find_all("div", {"class": "el-meta uk-text-meta uk-margin-top"})
@@ -94,7 +93,7 @@ def scrape_articles(soup, source):
 
         for item in list_item:
             title = item.div.span.article.div.div.h4.text
-            link = item.div.span.article.div.div.h4.a['href']
+            link = 'https://www.imi.europa.eu' + item.div.span.article.div.div.h4.a['href']
             titles.append(title)
             links.append(link)
 
@@ -111,7 +110,7 @@ def scrape_articles(soup, source):
         list_item = soup.find_all("h3", {"class": "card-row-title margin-right-20"})
         for item in list_item:
             title = item.a.text.strip()
-            link = item.a['href']
+            link = 'https://www.eib.org' + item.a['href']
             titles.append(title)
             links.append(link)
         list_item = soup.find_all("span", {"class": "card-row-date"})
@@ -192,7 +191,7 @@ def scrape_articles(soup, source):
         list_item = soup.find_all('h2', {'class':'node__title node-title'})
         for item in list_item:
             title = item.a.text
-            link = item.a['href']
+            link = 'https://urbact.eu' + item.a['href']
             titles.append(title)
             links.append(link)
         list_item = soup.find_all('time', {'pubdate':''})
@@ -286,7 +285,7 @@ def scrape_articles(soup, source):
             for article in article_containers:
                 if type(article) is bs4.element.Tag:
                     title = article.div.h3.text
-                    link = article.div.h3.a['href']
+                    link = 'https://www.consilium.europa.eu' + article.div.h3.a['href']
                     snippet = article.p.text
                     links.append(link)
                     titles.append(title)
@@ -364,7 +363,7 @@ def scrape_articles(soup, source):
         articles = soup.findAll("li")
         for article in articles:
             title = article.a.text
-            link = article.a['href']
+            link = 'https://eit.europa.eu' + article.a['href']
             pub_date = article.span.text
             snippet = ''
             titles.append(title)
@@ -386,7 +385,7 @@ def scrape_articles(soup, source):
         list_item = soup.find_all('div', {'class':'views-field views-field-title'})
         for item in list_item:
             title = item.span.a.text
-            link = item.span.a['href']
+            link = 'https://www.espon.eu' + item.span.a['href']
             titles.append(title)
             links.append(link)
         list_item = soup.find_all('div', {'class':'views-field views-field-created'})
@@ -420,6 +419,31 @@ def scrape_articles(soup, source):
             links.append(link)
             pub_dates.append(pub_date)
             snippets.append(snippet)
+    elif source == 'jrc':
+        list_item = soup.find_all('div', {'class':'ds-1col node node-news view-mode-apache_solr_mode clearfix'})
+        for item in list_item:
+            titletag = item.find('div', {'class':'field field-name-title field-type-ds field-label-hidden'})
+            title = titletag.h3.text
+            link = 'https://ec.europa.eu' + titletag.a['href']
+            snippet = item.find('div', {'property':'content:encoded'}).text.strip()
+            pub_date = item.find('div', {'class':'date-cont start-date'}).text.strip()
+            titles.append(title)
+            links.append(link)
+            snippets.append(snippet)
+            pub_dates.append(pub_date)
+
+    elif source == 'promis':
+        list_item = soup.find_all('div', {'class':'notiziaConFoto'})
+        for item in list_item:
+            title = item.find('h1').text.strip()
+            link = 'https://www.promisalute.it' + item.find('a')['href']
+            snippet = item.find('h3').text.strip()
+            pub_date = item.find('h2').text.strip()
+            titles.append(title)
+            links.append(link)
+            snippets.append(snippet)
+            pub_dates.append(pub_date)
+
     else:
         print("There is not yet a retrieval method for this website")
         return 1
