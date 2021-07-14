@@ -452,5 +452,5 @@ def scrape_articles(soup, source):
         pub_dates[index] = np.datetime64(pub_dates[index]).astype(datetime)
     df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
                     columns =['title', 'pub_date', 'snippet', 'link'])
-    df['source'] = source
+    df['source'] = source    
     return df
