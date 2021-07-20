@@ -953,3 +953,318 @@ def eurostat(url, driver, date):
         time.sleep(2)
 
     return final_df
+
+def eusalp(url, driver, date):
+
+    driver.get(url)
+    time.sleep(3)
+
+    is_paginated = True
+    final_df = pd.DataFrame()
+
+    try:
+        cookies = driver.find_element_by_xpath('//button[@class="decline-button eu-cookie-compliance-default-button"]')
+        cookies.click()
+    except:
+        print("cookies are already ok")
+
+
+    while is_paginated:
+        titles = []
+        links = []
+        pub_dates = []
+        snippets = []
+
+        article_containers = driver.find_element_by_xpath('//div[@class="view-content"]')
+
+        article_containers = article_containers.get_attribute('innerHTML')
+        soup = bs4.BeautifulSoup(article_containers, 'lxml')
+
+        list_item = soup.find_all("h3", {"class": "views-field views-field-title event-box-title"})
+        for item in list_item:
+            title = item.span.a.text
+            link = 'https://www.alpine-region.eu' + item.span.a['href']
+            links.append(link)
+            titles.append(title)
+
+        list_item = soup.find_all("span", {"class": "date-display-single"})
+        for item in list_item:
+            pub_date = item.text
+            pub_dates.append(pub_date)
+
+        list_item = soup.find_all("div", {"class": "views-field views-field-body"})
+        for item in list_item:
+            snippet = item.span.text
+            snippets.append(snippet)
+
+        for index, one_date in enumerate(pub_dates):
+            pub_dates[index] = dateparser.parse(one_date).date()
+        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
+                        columns =['title', 'pub_date', 'snippet', 'link'])
+
+        final_df = final_df.append(df)
+
+
+        if df.iloc[len(df) - 1]['pub_date'] <= date:
+            is_paginated = False
+        else:
+            button = driver.find_element_by_xpath('//a[@title="Go to next page"]')
+            button.click()
+
+        time.sleep(2)
+
+    return final_df
+
+## ONLY GETS 2021, even if 2020 and 2019 are on the same page
+def imi(url, driver, date):
+
+    driver.get(url)
+    time.sleep(3)
+
+    is_paginated = True
+    final_df = pd.DataFrame()
+
+
+    titles = []
+    links = []
+    pub_dates = []
+    snippets = []
+
+    article_containers = driver.find_element_by_xpath('//div[@class="view-grouping-content info-box light-grey-bg"]')
+
+    article_containers = article_containers.get_attribute('innerHTML')
+    soup = bs4.BeautifulSoup(article_containers, 'lxml')
+
+    list_item = soup.find_all("div", {"class": "views-row article-row"})
+
+    for item in list_item:
+        title = item.div.span.article.div.div.h4.text
+        link = 'https://www.imi.europa.eu' + item.div.span.article.div.div.h4.a['href']
+        titles.append(title)
+        links.append(link)
+
+    list_item = soup.find_all("span", {"class": "published-date"})
+    for item in list_item:
+        pub_date = item.text
+        pub_dates.append(pub_date)
+
+    list_item = soup.find_all("div", {"class": "field field--name-body field--type-text-with-summary field--label-hidden field--item"})
+    for item in list_item:
+        snippet = item.text
+        snippets.append(snippet)
+
+    for index, one_date in enumerate(pub_dates):
+        pub_dates[index] = dateparser.parse(one_date).date()
+    df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)), columns =['title', 'pub_date', 'snippet', 'link'])
+
+    final_df = final_df.append(df)
+
+    time.sleep(2)
+
+    return final_df
+
+## INTERACT is still missing
+
+def interreg(url, driver, date):
+
+    driver.get(url)
+    time.sleep(3)
+
+    is_paginated = True
+    final_df = pd.DataFrame()
+
+    while is_paginated:
+        titles = []
+        links = []
+        pub_dates = []
+        snippets = []
+
+        article_containers = driver.find_element_by_xpath('//div[@class="content-area"]')
+
+        article_containers = article_containers.get_attribute('innerHTML')
+        soup = bs4.BeautifulSoup(article_containers, 'lxml')
+
+        list_item = soup.find_all('section', {'class','search-result__item search-result__item--news'})
+        for item in list_item:
+            title = item.find('div', {'class':'search-result__item__title'})
+            link = title.a['href']
+            title = title.a.text.strip()
+            pub_date = item.find('span', {'class': 'bold'}).text
+            snippet = item.find('div', {'class':'clamp-this__2-lines'}).text.strip()
+            titles.append(title)
+            links.append(link)
+            pub_dates.append(pub_date)
+            snippets.append(snippet)
+
+        for index, one_date in enumerate(pub_dates):
+            pub_dates[index] = dateparser.parse(one_date).date()
+        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
+                        columns =['title', 'pub_date', 'snippet', 'link'])
+
+        final_df = final_df.append(df)
+
+
+        if df.iloc[len(df) - 1]['pub_date'] <= date:
+            is_paginated = False
+        else:
+            button = driver.find_element_by_xpath('//a[@aria-label="Next"]')
+            button.click()
+
+        time.sleep(2)
+
+    return final_df
+
+def jrc(url, driver, date):
+    driver.get(url)
+    time.sleep(3)
+
+    is_paginated = True
+    final_df = pd.DataFrame()
+
+    while is_paginated:
+        titles = []
+        links = []
+        pub_dates = []
+        snippets = []
+
+        article_containers = driver.find_element_by_xpath('//div[@class="block block-system panel panel-default clearfix"]')
+
+        article_containers = article_containers.get_attribute('innerHTML')
+        soup = bs4.BeautifulSoup(article_containers, 'lxml')
+
+        list_item = soup.find_all('div', {'class':'ds-1col node node-news view-mode-apache_solr_mode clearfix'})
+        for item in list_item:
+            titletag = item.find('div', {'class':'field field-name-title field-type-ds field-label-hidden'})
+            title = titletag.h3.text
+            link = 'https://ec.europa.eu' + titletag.a['href']
+            snippet = item.find('div', {'property':'content:encoded'}).text.strip()
+            pub_date = item.find('div', {'class':'date-cont start-date'}).text.strip()
+            titles.append(title)
+            links.append(link)
+            snippets.append(snippet)
+            pub_dates.append(pub_date)
+
+        for index, one_date in enumerate(pub_dates):
+            pub_dates[index] = dateparser.parse(one_date).date()
+        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
+                        columns =['title', 'pub_date', 'snippet', 'link'])
+
+        final_df = final_df.append(df)
+
+        if df.iloc[len(df) - 1]['pub_date'] <= date:
+            is_paginated = False
+        else:
+            button = driver.find_element_by_xpath('//a[@title="Go to next page"]')
+            button.click()
+
+        time.sleep(2)
+
+    return final_df
+
+def promis(url, driver, date):
+
+    driver.get(url)
+    time.sleep(3)
+
+    is_paginated = True
+    final_df = pd.DataFrame()
+
+    while is_paginated:
+        titles = []
+        links = []
+        pub_dates = []
+        snippets = []
+
+        article_containers = driver.find_element_by_xpath('//div[@id="boxNotizieArchivio"]')
+
+        article_containers = article_containers.get_attribute('innerHTML')
+        soup = bs4.BeautifulSoup(article_containers, 'lxml')
+
+        list_item = soup.find_all('div', {'class':'notiziaConFoto'})
+        for item in list_item:
+            title = item.find('h1').text.strip()
+            link = 'https://www.promisalute.it' + item.find('a')['href']
+            snippet = item.find('h3').text.strip()
+            pub_date = item.find('h2').text.strip()
+            pub_date = pub_date.split('\n')[1].strip()
+            titles.append(title)
+            links.append(link)
+            snippets.append(snippet)
+            pub_dates.append(pub_date)
+
+        for index, one_date in enumerate(pub_dates):
+            pub_dates[index] = dateparser.parse(one_date).date()
+        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
+                        columns =['title', 'pub_date', 'snippet', 'link'])
+
+        final_df = final_df.append(df)
+
+
+        if df.iloc[len(df) - 1]['pub_date'] <= date:
+            is_paginated = False
+        else:
+            button = driver.find_element_by_xpath('//a[@id="formid_ElencoNotizie_Paginazione_Paginazione_Link_Successiva"]')
+            button.click()
+
+        time.sleep(2)
+
+    return final_df
+
+def urbact(url, driver, date):
+    counter = 1
+    driver.get(url)
+    time.sleep(3)
+
+    try:
+        cookies = driver.find_element_by_xpath('//button[@class="decline-button eu-cookie-compliance-default-button"]')
+        cookies.click()
+    except:
+        print("cookies are already ok")
+
+    is_paginated = True
+    final_df = pd.DataFrame()
+
+    while is_paginated:
+        titles = []
+        links = []
+        pub_dates = []
+        snippets = []
+
+        article_containers = driver.find_element_by_xpath('//div[@class="panel-pane pane-views-panes pane-urbact-articles-article-list-news"]')
+
+        article_containers = article_containers.get_attribute('innerHTML')
+        soup = bs4.BeautifulSoup(article_containers, 'lxml')
+
+        list_item = soup.find_all('h2', {'class':'node__title node-title'})
+        for item in list_item:
+            title = item.a.text
+            link = 'https://urbact.eu' + item.a['href']
+            titles.append(title)
+            links.append(link)
+        list_item = soup.find_all('time', {'pubdate':''})
+        for item in list_item:
+            pub_date = item['datetime']
+            pub_dates.append(pub_date)
+        list_item = soup.find_all('div', {'class':'field-item even'})
+        for item in list_item:
+            snippet = item.text.strip()
+            if snippet != '':
+                snippets.append(snippet)
+
+        for index, one_date in enumerate(pub_dates):
+            pub_dates[index] = dateparser.parse(one_date).date()
+        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
+                        columns =['title', 'pub_date', 'snippet', 'link'])
+
+        final_df = final_df.append(df)
+
+        counter = counter + 1
+        if df.iloc[len(df) - 1]['pub_date'] <= date:
+            is_paginated = False
+        elif counter < 6:
+            button = driver.find_element_by_xpath('//a[@title="Go to next page"]')
+            button.click()
+
+        time.sleep(2)
+
+    return final_df

@@ -7,9 +7,9 @@ from time import sleep
 import bs4
 import websites
 
-
+#url = sources['link'].iloc[0]
 sources = pd.read_csv('sources.csv')
-sources = sources.iloc[2].transpose()
+sources = pd.DataFrame(sources.iloc[2]).transpose()
 for i, source in sources.iterrows():
     if source['website'] == 'apre':
         driver = webdriver.Firefox()
@@ -18,7 +18,11 @@ for i, source in sources.iterrows():
     elif source['website'] == 'areflh':
         driver = webdriver.Firefox()
         df = websites.areflh(source['link'], driver)
-    elif source['website'] = 'consigliodeuropait'
+        driver.close()
+    elif source['website'] == 'consigliodeuropait':
+        driver = webdriver.Firefox()
+        df = websites.consigliodeuropait(source['link'], driver)
+        df = websites.consigliodeuropait(url, driver)
         print(df)
 
     try:

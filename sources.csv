@@ -21,8 +21,8 @@ eusalp,https://www.alpine-region.eu/news,active
 imi,https://www.imi.europa.eu/news-events/newsroom,active
 interact,https://www.interact-eu.net/#news,active
 interreg,https://www.interregeurope.eu/search/?tx_tevsearch_search%5BentityTypes%5D%5B0%5D=news&tx_tevsearch_search%5BfilterMap%5D=news_and_events&cHash=77de13491bcdbf115bcc65131e10499a,active
-jrc,https://ec.europa.eu/jrc/en/news-list,active
-parlamento_europeo_thinktank_eventi,https://www.europarl.europa.eu/thinktank/it/upcomingevents.html,active
+jrc,https://ec.europa.eu/jrc/en/news-list, active
+parlamento_europeo_thinktank_eventi,https://www.europarl.europa.eu/thinktank/it/upcomingevents.html,todo
 promis,https://www.promisalute.it/servizi/notizie/notizie_fase01.aspx?categoriaVisualizzata=7,active
 urbact,https://urbact.eu/urbact-news,active
 necstour,http://www.necstour.eu/event,broken
