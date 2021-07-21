@@ -7,9 +7,13 @@ from time import sleep
 import bs4
 import websites
 
-#url = sources['link'].iloc[0]
-sources = pd.read_csv('sources.csv')
-sources = pd.DataFrame(sources.iloc[2]).transpose()
+# load csv file with sources
+sources = pd.read_csv('sources_short.csv')
+
+
+
+
+# loop through sources
 for i, source in sources.iterrows():
     if source['website'] == 'apre':
         driver = webdriver.Firefox()
