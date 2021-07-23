@@ -13,6 +13,10 @@ date = date(2021, 7, 19)
 # Set log file
 log = open('eunews.log', 'w')
 log.close()
+dataframe = open('articles.csv', 'w')
+dataframe.close()
+
+
 
 # Load sources
 sources = pd.read_csv('sources.csv')
@@ -25,7 +29,7 @@ for i, website in sources.iterrows():
         temp_df = locals()[website['website']](website['link'], driver, date)
         df = df.append(temp_df)
         df = df[df['pub_date'] >= date]
-        df.to_csv('articles.csv')
+        df.to_csv('articles.csv', index = False)
     except:
         log = open('eunews.log', 'a')
         log.write("There was an error parsing " + website['website'] + '\n')
