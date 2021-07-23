@@ -24,7 +24,7 @@ interreg,https://www.interregeurope.eu/search/?tx_tevsearch_search%5BentityTypes
 jrc,https://ec.europa.eu/jrc/en/news-list, active
 parlamento_europeo_thinktank_eventi,https://www.europarl.europa.eu/thinktank/it/upcomingevents.html,todo
 promis,https://www.promisalute.it/servizi/notizie/notizie_fase01.aspx?categoriaVisualizzata=7,active
-urbact,https://urbact.eu/urbact-news,active
+urbact,https://urbact.eu/urbact-news,todo
 necstour,http://www.necstour.eu/event,broken
 ec_affari_economici,https://ec.europa.eu/info/departments/economic-and-financial-affairs_it#novita?,expiring
 ec_affari_marittimi_pesca_news,http://ec.europa.eu/newsroom/index.cfm?universe_acronym=mare,expiring

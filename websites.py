@@ -8,7 +8,7 @@ import time
 from selenium.webdriver.common.action_chains import ActionChains
 
 # Apre is ok, no need to filter articles
-def apre(url, driver):
+def apre(url, driver, date):
     titles = []
     links = []
     pub_dates = []
@@ -38,7 +38,7 @@ def apre(url, driver):
                     columns =['title', 'pub_date', 'snippet', 'link'])
     return df
 
-def areflh(url, driver):
+def areflh(url, driver, date):
     titles = []
     links = []
     pub_dates = []
