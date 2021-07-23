@@ -27,6 +27,7 @@ df = pd.DataFrame()
 for i, website in sources.iterrows():
     try:
         temp_df = locals()[website['website']](website['link'], driver, date)
+        temp_df['source'] = website['website']
         df = df.append(temp_df)
         df = df[df['pub_date'] >= date]
         df.to_csv('articles.csv', index = False)
