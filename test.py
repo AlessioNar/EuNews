@@ -1,40 +1,29 @@
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 import time
 from websites import *
 import pandas as pd
+
 from datetime import date
-
-# Set the target date for article retrieval
-date = date(2021, 7, 19)
-
-# Set log file
-log = open('eunews.log', 'w')
-log.close()
-dataframe = open('articles.csv', 'w')
-dataframe.close()
+import dateparser
+from transform import standardize_date, std_date_day
 
 
+source = 'apre'
+url = 'https://www.consilium.europa.eu/it/press/press-releases/'
+status = 'active'
 
-# Load sources
-sources = pd.read_csv('sources.csv')
+target_date = date(2021, 7, 19)
 
-# Open webdriver
 driver = webdriver.Firefox()
-df = pd.DataFrame()
-for i, website in sources.iterrows():
-    try:
-        temp_df = locals()[website['website']](website['link'], driver, date)
-        temp_df['source'] = website['website']
-        df = df.append(temp_df)
-        df = df[df['pub_date'] >= date]
-        df.to_csv('articles.csv', index = False)
-    except:
-        log = open('eunews.log', 'a')
-        log.write("There was an error parsing " + website['website'] + '\n')
 
-    time.sleep(3)
 
-driver.close()
+temp_df = consiglioeuropeo(url, driver, target_date)
+
+temp_df['pub_date'].apply(standardize_date)
+
+temp_df = df
+temp_df['source'] = source
+
+temp_df['pub_date'][0]
+type(temp_df['pub_date'][0])
+type(target_date)

@@ -5,18 +5,54 @@ import numpy as np
 import pandas as pd
 import re
 import time
-from selenium.webdriver.common.action_chains import ActionChains
+from transform import standardize_date, std_date_day
 
-# Apre is ok, no need to filter articles
-def apre(url, driver, date):
+def initialize_lists():
     titles = []
     links = []
     pub_dates = []
     snippets = []
+    return titles, links, pub_dates, snippets
+
+def get_soup(container):
+    container = container.get_attribute('innerHTML')
+    soup = bs4.BeautifulSoup(container, 'lxml')
+    return soup
+
+def create_df(titles, pub_dates, snippets, links, dayfirst=False):
+    # Put in the dataframe
+    df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
+                    columns =['title', 'pub_date', 'snippet', 'link'])
+
+    if dayfirst == False:# transform date in standard format
+        df['pub_date'] = df['pub_date'].apply(standardize_date)
+    else:
+        df['pub_date'] = df['pub_date'].apply(std_date_day)
+
+    return df
+
+def apre(url, driver, max_date):
+
+    # initialize container lists
+    titles, links, pub_dates, snippets = initialize_lists()
+
+    # Go to website url
     driver.get(url)
-    article_containers = driver.find_elements_by_xpath('//main[@class="site-main"]')[0]
-    article_containers = article_containers.get_attribute('innerHTML')
-    soup = bs4.BeautifulSoup(article_containers, 'lxml')
+    time.sleep(1)
+
+    # Reject cookies
+    try:
+        cookies = driver.find_element_by_xpath('//button[@class="iubenda-cs-reject-btn iubenda-cs-btn-primary"]')
+        cookies.click()
+        time.sleep(1)
+    except:
+        print('Cookies already set')
+
+    # Find container block and get html
+    container = driver.find_element_by_xpath('//main[@class="site-main"]')
+    soup = get_soup(container)
+
+    # Parse html
     list_item = soup.find_all('h2', {'class':'entry-title'})
     for item in list_item:
         title = item.text.strip()
@@ -31,22 +67,21 @@ def apre(url, driver, date):
     for item in list_item:
         snippet = item.text.strip()
         snippets.append(snippet)
-    for index, one_date in enumerate(pub_dates):
-        pub_dates[index] = dateparser.parse(one_date)
-        pub_dates[index] = np.datetime64(pub_dates[index]).astype(datetime)
-    df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
-                    columns =['title', 'pub_date', 'snippet', 'link'])
+
+    df = create_df(titles, pub_dates, snippets, links)
+
     return df
 
-def areflh(url, driver, date):
-    titles = []
-    links = []
-    pub_dates = []
-    snippets = []
+def areflh(url, driver, max_date):
+    # initialize container lists
+    titles, links, pub_dates, snippets = initialize_lists()
+
+    # Go to website url
     driver.get(url)
-    article_containers = driver.find_elements_by_xpath('//div[@class="uk-container"]')[1]
-    article_containers = article_containers.get_attribute('innerHTML')
-    soup = bs4.BeautifulSoup(article_containers, 'lxml')
+    time.sleep(1)
+
+    container = driver.find_elements_by_xpath('//div[@class="uk-container"]')[1]
+    soup = get_soup(container)
 
     list_item = soup.find_all("h3", {"class": "el-title uk-card-title uk-margin-top uk-margin-remove-bottom"})
     for item in list_item:
@@ -71,29 +106,23 @@ def areflh(url, driver, date):
             snippet = item.div.text
         snippets.append(snippet)
 
-    for index, one_date in enumerate(pub_dates):
-        pub_dates[index] = dateparser.parse(one_date)
-        pub_dates[index] = np.datetime64(pub_dates[index]).astype(datetime)
-    df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
-                    columns =['title', 'pub_date', 'snippet', 'link'])
+    df = create_df(titles, pub_dates, snippets, links)
+
     return df
 
-# This is ok and it works. I just need to provide the end date and then
-# Eventually filter the results
-def consigliodeuropait(url, driver, date):
+def consigliodeuropait(url, driver, max_date):
+
+    # initialize container lists, df, and loop
+    titles, links, pub_dates, snippets = initialize_lists()
+    df = pd.DataFrame()
+    is_paginated = True
 
     driver.get(url)
 
-    is_paginated = True
-    final_df = pd.DataFrame()
     while is_paginated:
-        titles = []
-        links = []
-        pub_dates = []
-        snippets = []
-        article_containers = driver.find_elements_by_xpath('//div[@class="newsroom "]')[0]
-        article_containers = article_containers.get_attribute('innerHTML')
-        soup = bs4.BeautifulSoup(article_containers, 'lxml')
+
+        container = driver.find_element_by_xpath('//div[@class="newsroom "]')
+        soup = get_soup(container)
 
         list_item = soup.find_all("div", {"class": "element clearfix"})
         for item in list_item:
@@ -108,43 +137,40 @@ def consigliodeuropait(url, driver, date):
             pub_dates.append(pub_date)
             snippets.append(snippet)
 
-        for index, one_date in enumerate(pub_dates):
-            pub_dates[index] = dateparser.parse(one_date).date()
+        temp_df = create_df(titles, pub_dates, snippets, links)
 
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
-                        columns =['title', 'pub_date', 'snippet', 'link'])
+        df = df.append(temp_df)
 
-        final_df = final_df.append(df)
-
-
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if temp_df['pub_date'][len(temp_df) - 1] <= max_date:
             is_paginated = False
         else:
             button = driver.find_element_by_xpath("//a[contains(text(), 'seguente')]")
             button.click()
 
-    return final_df
+    return df
 
-# Working
-def consiglioeuropeo(url, driver, date):
-    counter = 1
+def consiglioeuropeo(url, driver, max_date):
+
     driver.get(url)
-
+    time.sleep(1)
     try:
         cookies = driver.find_elements_by_xpath('//span[@id="reject_cookies"]')[0]
         cookies.click()
+        time.sleep(1)
     except:
         print('Cookies are already rejected')
+
+    # set counter and initialize df
+    counter = 1
     is_paginated = True
-    final_df = pd.DataFrame()
+    df = pd.DataFrame()
+
     while is_paginated:
-        titles = []
-        links = []
-        pub_dates = []
-        snippets = []
-        article_containers = driver.find_elements_by_xpath('//div[@class="col-md-9 council-flexify-item pull-right"]')[0]
-        article_containers = article_containers.get_attribute('innerHTML')
-        soup = bs4.BeautifulSoup(article_containers, 'lxml')
+        titles, links, pub_dates, snippets = initialize_lists()
+
+        container = driver.find_element_by_xpath('//div[@class="col-md-9 council-flexify-item pull-right"]')
+
+        soup = get_soup(container)
 
         list_item = soup.find_all("ul", {"class": "list-group"})
         for item in list_item:
@@ -160,45 +186,33 @@ def consiglioeuropeo(url, driver, date):
                     snippets.append(snippet)
                     pub_dates.append(pub_date)
 
-        for index, one_date in enumerate(pub_dates):
-            pub_dates[index] = dateparser.parse(one_date).date()
+        temp_df = create_df(titles, pub_dates, snippets, links, dayfirst = True)
 
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
-                        columns =['title', 'pub_date', 'snippet', 'link'])
+        df = df.append(temp_df)
 
-        final_df = final_df.append(df)
-
-        counter = counter+1
-
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        # Check date and eventually go to the next page
+        if temp_df.iloc[len(temp_df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
+            counter = counter + 1
             driver.get(url+'?Page='+str(counter))
             time.sleep(3)
 
-            #driver.execute_script("window.scrollTo(0, 3500);")
-            #button = driver.find_element_by_xpath('//li[@aria-label="Vai alla pagina successiva"]')
-            #button.click()
-
-    return final_df
+    return df
 
 # COR websites contains only 5 pages!
-def cor(url, driver, date):
+def cor(url, driver, max_date):
 
     driver.get(url)
-
     is_paginated = True
-    final_df = pd.DataFrame()
+    df = pd.DataFrame()
     counter = 1
     while is_paginated:
 
-        titles = []
-        links = []
-        pub_dates = []
-        snippets = []
-        article_containers = driver.find_elements_by_xpath('//div[@class="cbq-layout-main"]')[0]
-        article_containers = article_containers.get_attribute('innerHTML')
-        soup = bs4.BeautifulSoup(article_containers, 'lxml')
+        titles, links, pub_dates, snippets = initialize_lists()
+
+        container = driver.find_element_by_xpath('//div[@class="cbq-layout-main"]')
+        soup = get_soup(container)
 
         list_item = soup.find_all("div", {"class":"col-md-6 card"})
         for item in list_item:
@@ -220,16 +234,11 @@ def cor(url, driver, date):
                 pub_dates.append(pub_date)
                 snippets.append(snippet)
 
-        for index, one_date in enumerate(pub_dates):
-            pub_dates[index] = dateparser.parse(one_date, settings={'DATE_ORDER': 'DMY'}).date()
+        temp_df = create_df(titles, pub_dates, snippets, links)
 
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
-                        columns =['title', 'pub_date', 'snippet', 'link'])
+        df = df.append(temp_df)
 
-        final_df = final_df.append(df)
-
-
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if temp_df.iloc[len(temp_df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             if counter == 1:
@@ -248,12 +257,11 @@ def cor(url, driver, date):
                 navbar.click()
                 counter = counter + 1
 
-
         time.sleep(2)
 
-    return final_df
+    return df
 
-def cprm(url, driver, date):
+def cprm(url, driver, max_date):
 
     driver.get(url)
 
@@ -293,7 +301,7 @@ def cprm(url, driver, date):
         final_df = final_df.append(df)
 
 
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -302,7 +310,7 @@ def cprm(url, driver, date):
 
     return final_df
 
-def earlall(url, driver, date):
+def earlall(url, driver, max_date):
 
     driver.get(url)
 
@@ -339,7 +347,7 @@ def earlall(url, driver, date):
         final_df = final_df.append(df)
 
 
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             button = driver.find_element_by_xpath('//a[@class="nextpostslink"]')
@@ -349,7 +357,7 @@ def earlall(url, driver, date):
 
     return final_df
 
-def eea(url, driver, date):
+def eea(url, driver, max_date):
 
     driver.get(url)
 
@@ -385,7 +393,7 @@ def eea(url, driver, date):
 
         final_df = final_df.append(df)
 
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             button = driver.find_element_by_xpath('//a[@class="next"]')
@@ -395,7 +403,7 @@ def eea(url, driver, date):
 
     return final_df
 
-def eib(url, driver, date):
+def eib(url, driver, max_date):
 
     driver.get(url)
     time.sleep(3)
@@ -440,7 +448,7 @@ def eib(url, driver, date):
         final_df = final_df.append(df)
 
 
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             button = driver.find_element_by_xpath('//a[@class="nextPrevPagination nextPagination"]')
@@ -451,7 +459,7 @@ def eib(url, driver, date):
     return final_df
 
 # EIF HAS A DIFFERENT PAGE, CHECK LINK
-def eif(url, driver, date):
+def eif(url, driver, max_date):
 
     driver.get(url)
     time.sleep(3)
@@ -496,7 +504,7 @@ def eif(url, driver, date):
         final_df = final_df.append(df)
 
 
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             button = driver.find_element_by_xpath('//a[@class="nextPrevPagination nextPagination"]')
@@ -506,7 +514,7 @@ def eif(url, driver, date):
 
     return final_df
 
-def eit(url, driver, date):
+def eit(url, driver, max_date):
 
     driver.get(url)
     time.sleep(3)
@@ -550,7 +558,7 @@ def eit(url, driver, date):
         final_df = final_df.append(df)
 
 
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             button = driver.find_element_by_xpath('//a[@title="Go to next page"]')
@@ -560,7 +568,7 @@ def eit(url, driver, date):
 
     return final_df
 
-def enicbcmed(url, driver, date):
+def enicbcmed(url, driver, max_date):
 
     driver.get(url)
     time.sleep(3)
@@ -606,7 +614,7 @@ def enicbcmed(url, driver, date):
         final_df = final_df.append(df)
 
 
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             button = driver.find_element_by_xpath('//a[@title="Go to next page"]')
@@ -617,7 +625,7 @@ def enicbcmed(url, driver, date):
     return final_df
 
 ## there are two more sections to check
-def espon(url, driver, date):
+def espon(url, driver, max_date):
 
     driver.get(url)
     time.sleep(3)
@@ -660,7 +668,7 @@ def espon(url, driver, date):
         final_df = final_df.append(df)
 
 
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             counter = counter + 1
@@ -672,7 +680,7 @@ def espon(url, driver, date):
 
     return final_df
 
-def eucommission(url, driver, date):
+def eucommission(url, driver, max_date):
 
     driver.get(url)
     time.sleep(3)
@@ -721,7 +729,7 @@ def eucommission(url, driver, date):
         final_df = final_df.append(df)
 
 
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             counter = counter + 1
@@ -733,7 +741,7 @@ def eucommission(url, driver, date):
 
     return final_df
 
-def euparliament(url, driver, date):
+def euparliament(url, driver, max_date):
 
     driver.get(url)
     time.sleep(3)
@@ -782,7 +790,7 @@ def euparliament(url, driver, date):
         final_df = final_df.append(df)
 
 
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             final_df = pd.DataFrame()
@@ -794,7 +802,7 @@ def euparliament(url, driver, date):
 
     return final_df
 
-def euregha(url, driver, date):
+def euregha(url, driver, max_date):
 
     driver.get(url)
     time.sleep(3)
@@ -833,7 +841,7 @@ def euregha(url, driver, date):
         final_df = final_df.append(df)
 
 
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             button = driver.find_element_by_xpath("//a[contains(text(), 'Older Entries')]")
@@ -844,7 +852,7 @@ def euregha(url, driver, date):
 
     return final_df
 
-def europeanagency(url, driver, date):
+def europeanagency(url, driver, max_date):
 
     driver.get(url)
     time.sleep(3)
@@ -892,7 +900,7 @@ def europeanagency(url, driver, date):
         final_df = final_df.append(df)
 
 
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             button = driver.find_element_by_xpath('//a[@title="Go to next page"]')
@@ -902,7 +910,7 @@ def europeanagency(url, driver, date):
 
     return final_df
 
-def eurostat(url, driver, date):
+def eurostat(url, driver, max_date):
 
     driver.get(url)
     time.sleep(3)
@@ -944,7 +952,7 @@ def eurostat(url, driver, date):
         final_df = final_df.append(df)
 
 
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             button = driver.find_element_by_xpath('//a[contains(text(), "Next")]')
@@ -954,7 +962,7 @@ def eurostat(url, driver, date):
 
     return final_df
 
-def eusalp(url, driver, date):
+def eusalp(url, driver, max_date):
 
     driver.get(url)
     time.sleep(3)
@@ -1005,7 +1013,7 @@ def eusalp(url, driver, date):
         final_df = final_df.append(df)
 
 
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             button = driver.find_element_by_xpath('//a[@title="Go to next page"]')
@@ -1016,7 +1024,7 @@ def eusalp(url, driver, date):
     return final_df
 
 ## ONLY GETS 2021, even if 2020 and 2019 are on the same page
-def imi(url, driver, date):
+def imi(url, driver, max_date):
 
     driver.get(url)
     time.sleep(3)
@@ -1065,7 +1073,7 @@ def imi(url, driver, date):
 
 ## INTERACT is still missing
 
-def interreg(url, driver, date):
+def interreg(url, driver, max_date):
 
     driver.get(url)
     time.sleep(3)
@@ -1104,7 +1112,7 @@ def interreg(url, driver, date):
         final_df = final_df.append(df)
 
 
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             button = driver.find_element_by_xpath('//a[@aria-label="Next"]')
@@ -1114,7 +1122,7 @@ def interreg(url, driver, date):
 
     return final_df
 
-def jrc(url, driver, date):
+def jrc(url, driver, max_date):
     driver.get(url)
     time.sleep(3)
 
@@ -1151,7 +1159,7 @@ def jrc(url, driver, date):
 
         final_df = final_df.append(df)
 
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             button = driver.find_element_by_xpath('//a[@title="Go to next page"]')
@@ -1161,7 +1169,7 @@ def jrc(url, driver, date):
 
     return final_df
 
-def promis(url, driver, date):
+def promis(url, driver, max_date):
 
     driver.get(url)
     time.sleep(3)
@@ -1200,7 +1208,7 @@ def promis(url, driver, date):
         final_df = final_df.append(df)
 
 
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         else:
             button = driver.find_element_by_xpath('//a[@id="formid_ElencoNotizie_Paginazione_Paginazione_Link_Successiva"]')
@@ -1210,7 +1218,7 @@ def promis(url, driver, date):
 
     return final_df
 
-def urbact(url, driver, date):
+def urbact(url, driver, max_date):
     counter = 1
     driver.get(url)
     time.sleep(3)
@@ -1259,7 +1267,7 @@ def urbact(url, driver, date):
         final_df = final_df.append(df)
 
         counter = counter + 1
-        if df.iloc[len(df) - 1]['pub_date'] <= date:
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
         elif counter < 6:
             button = driver.find_element_by_xpath('//a[@title="Go to next page"]')
