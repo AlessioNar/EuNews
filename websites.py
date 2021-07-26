@@ -1,48 +1,9 @@
 import bs4
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 import dateparser
-import numpy as np
 import pandas as pd
 import re
 import time
-from transform import standardize_date, std_date_day
-
-def consigliodeuropait(url, driver, max_date):
-
-    # initialize container lists, df, and loop
-    titles, links, pub_dates, snippets = initialize_lists()
-    df = pd.DataFrame()
-
-    is_paginated = True
-    while is_paginated:
-
-        container = driver.find_element_by_xpath('//div[@class="newsroom "]')
-        soup = get_soup(container)
-
-        list_item = soup.find_all("div", {"class": "element clearfix"})
-        for item in list_item:
-            title = item.h3.text.strip()
-            link = item.h3.a['href']
-            upper = item.find_all("div", {"class": "upper"})[0]
-            pub_date = upper.find_all("span", {"class":"date"})[0].text
-            snippet = item.p.text.strip()
-
-            titles.append(title)
-            links.append(link)
-            pub_dates.append(pub_date)
-            snippets.append(snippet)
-
-        temp_df = create_df(titles, pub_dates, snippets, links)
-
-        df = df.append(temp_df)
-
-        if temp_df['pub_date'][len(temp_df) - 1] <= max_date:
-            is_paginated = False
-        else:
-            button = driver.find_element_by_xpath("//a[contains(text(), 'seguente')]")
-            button.click()
-
-    return df
 
 def consiglioeuropeo(url, driver, max_date):
 
