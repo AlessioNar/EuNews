@@ -8,6 +8,7 @@ class ConsiglioDEuropaITScraper(Scraper):
 
         self.container_xpath = '//div[@class="newsroom "]'
         self.url = 'https://www.coe.int/it/web/portal/full-news'
+        self.next_btn = "//a[contains(text(), 'seguente')]"
 
     def std_date(self, to_date):
         return self.std_date_general(to_date)
@@ -16,22 +17,29 @@ class ConsiglioDEuropaITScraper(Scraper):
 
         # initialize container lists
         titles, urls, pub_dates, snippets = self.initialize_lists()
-        soup = self.extract_html()
 
-        # Parse html
-        list_item = soup.find_all('h2', {'class':'entry-title'})
-        for item in list_item:
-            title = item.text.strip()
-            url = item.a['href']
-            titles.append(title)
-            urls.append(url)
-        list_item = soup.find_all('span', {'class':'published'})
-        for item in list_item:
-            pub_date = item.text.strip()
-            pub_dates.append(pub_date)
-        list_item = soup.find_all('div', {'id':'bottom-blog'})
-        for item in list_item:
-            snippet = item.text.strip()
-            snippets.append(snippet)
+        is_paginated = True
+
+        while is_paginated:
+            soup = self.extract_html()
+
+            list_item = soup.find_all("div", {"class": "element clearfix"})
+            for item in list_item:
+                title = item.h3.text.strip()
+                url = item.h3.a['href']
+                upper = item.find_all("div", {"class": "upper"})[0]
+                pub_date = upper.find_all("span", {"class":"date"})[0].text
+                snippet = item.p.text.strip()
+
+                titles.append(title)
+                urls.append(url)
+                pub_dates.append(pub_date)
+                snippets.append(snippet)
+
+            if pub_dates[len(pub_dates) - 1] <= self.max_date:
+                is_paginated = False
+            else:
+                button = self.driver.find_element_by_xpath(self.next_btn)
+                button.click()
 
         return titles, pub_dates, snippets, urls
