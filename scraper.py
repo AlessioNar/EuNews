@@ -46,7 +46,7 @@ class Scraper(ABC):
 
     def create_df(self, titles, pub_dates, snippets, urls):
         df = pd.DataFrame(list(zip(titles, pub_dates, snippets, urls)), columns =['title', 'pub_date', 'snippet', 'url'])
-        df['pub_date'] = df['pub_date'].apply(self.std_date)
+        #df['pub_date'] = df['pub_date'].apply(self.std_date)
         return df
 
     def std_date_general(self, to_date):

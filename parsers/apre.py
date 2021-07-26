@@ -36,6 +36,7 @@ class ApreScraper(Scraper):
         list_item = soup.find_all('span', {'class':'published'})
         for item in list_item:
             pub_date = item.text.strip()
+            pub_date = self.std_date(pub_date)
             pub_dates.append(pub_date)
         list_item = soup.find_all('div', {'id':'bottom-blog'})
         for item in list_item:

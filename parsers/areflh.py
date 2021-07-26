@@ -48,6 +48,7 @@ class AreflhScraper(Scraper):
         list_item = soup.find_all("div", {"class": "el-meta uk-text-meta uk-margin-top"})
         for item in list_item:
             pub_date = re.sub('Publié le', '', item.text).strip()
+            pub_date = self.std_date(pub_date)    
             pub_dates.append(pub_date)
 
         list_item = soup.find_all("div", {"class": "el-content uk-panel uk-margin-top"})

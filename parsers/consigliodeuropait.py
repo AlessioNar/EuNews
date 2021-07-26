@@ -30,7 +30,7 @@ class ConsiglioDEuropaITScraper(Scraper):
                 upper = item.find_all("div", {"class": "upper"})[0]
                 pub_date = upper.find_all("span", {"class":"date"})[0].text
                 snippet = item.p.text.strip()
-
+                pub_date = self.std_date(pub_date)
                 titles.append(title)
                 urls.append(url)
                 pub_dates.append(pub_date)
