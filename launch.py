@@ -7,7 +7,7 @@ import dateparser
 from transform import standardize_date
 
 # Set the target date for article retrieval
-target_date = date(2021, 7, 19)
+target_date = date(2021, 7, 20)
 
 # Set log file
 log = open('eunews.log', 'w')
@@ -26,20 +26,20 @@ df = pd.DataFrame()
 
 for i, website in sources.iterrows():
     if website['status'] == 'active':
-        #try:
-        temp_df = locals()[website['website']](website['link'], driver, target_date)
-        temp_df['source'] = website['website']
+        try:
+            temp_df = locals()[website['website']](website['link'], driver, target_date)
+            temp_df['source'] = website['website']
+            temp_df = temp_df[temp_df['pub_date'] >= target_date]
 
-        temp_df = temp_df[temp_df['pub_date'] >= target_date]
-
-        df = df.append(temp_df)
-
-        df.to_csv('articles.csv', index = False)
-
+            df = df.append(temp_df)
+            if len(df) > 0:
+                df.to_csv('articles.csv', index = False)
+            else:
+                print(website['website'] + ' has no new articles')
         except:
             log = open('eunews.log', 'a')
             log.write("There was an error parsing " + website['website'] + '\n')
-        time.sleep(3)
+        time.sleep(5)
 
 
 
