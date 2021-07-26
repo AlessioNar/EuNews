@@ -29,6 +29,7 @@ for i, website in sources.iterrows():
         try:
             temp_df = locals()[website['website']](website['link'], driver, target_date)
             temp_df['source'] = website['website']
+            temp_df['section'] = 'Unassigned'
             temp_df = temp_df[temp_df['pub_date'] >= target_date]
 
             df = df.append(temp_df)

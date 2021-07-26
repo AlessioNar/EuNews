@@ -876,15 +876,11 @@ def eurostat(url, driver, max_date):
     final_df = pd.DataFrame()
 
     while is_paginated:
-        titles = []
-        links = []
-        pub_dates = []
-        snippets = []
+        titles, links, pub_dates, snippets = initialize_lists()
 
-        article_containers = driver.find_element_by_xpath('//ul[@class="product-list"]')
+        container = driver.find_element_by_xpath('//ul[@class="product-list"]')
 
-        article_containers = article_containers.get_attribute('innerHTML')
-        soup = bs4.BeautifulSoup(article_containers, 'lxml')
+        soup = get_soup(container)
 
         list_item = soup.find_all("div", {"class": "product-title"})
         for item in list_item:
@@ -901,13 +897,9 @@ def eurostat(url, driver, max_date):
             pub_date = item.text.strip()
             pub_dates.append(pub_date)
 
-        for index, one_date in enumerate(pub_dates):
-            pub_dates[index] = dateparser.parse(one_date).date()
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
-                        columns =['title', 'pub_date', 'snippet', 'link'])
+        temp_df = create_df(titles, pub_dates, snippets, links, dayfirst=True)
 
-        final_df = final_df.append(df)
-
+        df = df.append(temp_df)
 
         if df.iloc[len(df) - 1]['pub_date'] <= max_date:
             is_paginated = False
@@ -917,7 +909,7 @@ def eurostat(url, driver, max_date):
 
         time.sleep(2)
 
-    return final_df
+    return df
 
 def eusalp(url, driver, max_date):
 
@@ -987,21 +979,14 @@ def imi(url, driver, max_date):
     time.sleep(3)
 
     is_paginated = True
-    final_df = pd.DataFrame()
+    df = pd.DataFrame()
 
+    titles, links, pub_dates, snippets = initialize_lists()
+    container = driver.find_element_by_xpath('//div[@class="view-grouping-content info-box light-grey-bg"]')
 
-    titles = []
-    links = []
-    pub_dates = []
-    snippets = []
-
-    article_containers = driver.find_element_by_xpath('//div[@class="view-grouping-content info-box light-grey-bg"]')
-
-    article_containers = article_containers.get_attribute('innerHTML')
-    soup = bs4.BeautifulSoup(article_containers, 'lxml')
+    soup = get_soup(container)
 
     list_item = soup.find_all("div", {"class": "views-row article-row"})
-
     for item in list_item:
         title = item.div.span.article.div.div.h4.text
         link = 'https://www.imi.europa.eu' + item.div.span.article.div.div.h4.a['href']
@@ -1018,15 +1003,13 @@ def imi(url, driver, max_date):
         snippet = item.text
         snippets.append(snippet)
 
-    for index, one_date in enumerate(pub_dates):
-        pub_dates[index] = dateparser.parse(one_date).date()
-    df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)), columns =['title', 'pub_date', 'snippet', 'link'])
+    temp_df = create_df(titles, pub_dates, snippets, links, dayfirst=True)
 
-    final_df = final_df.append(df)
+    df = df.append(temp_df)
 
     time.sleep(2)
 
-    return final_df
+    return df
 
 ## INTERACT is still missing
 
@@ -1178,6 +1161,121 @@ def promis(url, driver, max_date):
         time.sleep(2)
 
     return final_df
+
+def ecgeneric(url, driver, max_date):
+
+    driver.get(url)
+    time.sleep(3)
+    counter = 1
+
+    is_paginated = True
+    df = pd.DataFrame()
+    try:
+        closepopup = driver.find_element_by_xpath("//a[@id='ec-survey-pop-up-body-button-do-not-participate']")
+        closepopup.click()
+    except:
+        print('no survey')
+
+    try:
+        cookies = driver.find_element_by_xpath("//a[@class='cck-actions-button']")
+        cookies.click()
+        closecookies = driver.find_element_by_xpath("//a[@href='#close']")
+        closecookies.click()
+    except:
+        print('no cookies')
+
+    while is_paginated:
+        titles, links, pub_dates, snippets = initialize_lists()
+
+        container = driver.find_element_by_xpath('//div[@class="view-content"]')
+
+        soup = get_soup(container)
+
+        list_item = soup.find_all("div", {"class": "listing__column-main"})
+        for item in list_item:
+            title = item.div.next_sibling.text.strip()
+            link = item.div.next_sibling.a['href']
+            pub_date = item.div.span.next_sibling.text.strip()
+            snippet = '' #item.find_all('p')
+            #if snippet == '':
+            #    snippet = ''
+            #else:
+            #    snippet = snippet.text.strip()
+
+            titles.append(title)
+            pub_dates.append(pub_date)
+            links.append(link)
+            snippets.append(snippet)
+        temp_df = create_df(titles, pub_dates, snippets, links)
+        df = df.append(temp_df)
+
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
+            is_paginated = False
+        else:
+            button = driver.find_element_by_xpath("//a[@title='Vai alla pagina successiva']")
+            button.click()
+
+        time.sleep(5)
+
+    return df
+
+def ecitalia(url, driver, max_date):
+
+    driver.get(url)
+    time.sleep(3)
+    counter = 1
+
+    is_paginated = True
+    df = pd.DataFrame()
+    try:
+        closepopup = driver.find_element_by_xpath("//a[@id='ec-survey-pop-up-body-button-do-not-participate']")
+        closepopup.click()
+    except:
+        print('no survey')
+
+    try:
+        cookies = driver.find_element_by_xpath("//a[@class='cck-actions-button']")
+        cookies.click()
+        closecookies = driver.find_element_by_xpath("//a[@href='#close']")
+        closecookies.click()
+    except:
+        print('no cookies')
+
+    while is_paginated:
+        titles, links, pub_dates, snippets = initialize_lists()
+
+        container = driver.find_element_by_xpath('//div[@class="ecl-content-item-block"]')
+
+        soup = get_soup(container)
+
+        list_item = soup.find_all("article")
+        for item in list_item:
+            title = item.div.next_sibling.div.next_sibling.a.text.strip()
+            link = 'https://italy.representation.ec.europa.eu' + item.div.next_sibling.div.next_sibling.a['href']
+            pub_date = item.div.next_sibling.div.time['datetime']
+            snippet = '' #item.find_all('p')
+            #if snippet == '':
+            #    snippet = ''
+            #else:
+            #    snippet = snippet.text.strip()
+
+            titles.append(title)
+            pub_dates.append(pub_date)
+            links.append(link)
+            snippets.append(snippet)
+        temp_df = create_df(titles, pub_dates, snippets, links)
+        df = df.append(temp_df)
+
+        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
+            is_paginated = False
+        else:
+            button = driver.find_element_by_xpath("//a[@class='ecl-link ecl-link--standalone ecl-link--icon ecl-link--icon-after ecl-pagination__link']")
+            button.click()
+
+        time.sleep(5)
+
+    return df
+
 
 def urbact(url, driver, max_date):
     counter = 1

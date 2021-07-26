@@ -8,15 +8,15 @@ import dateparser
 from transform import standardize_date, std_date_day
 
 
-source = 'enicbcmed'
-url = 'https://www.eif.org/news_centre/press_releases/all/index.htm?year=0000&category=&keywordList='
+source = 'imi'
+url = 'https://italy.representation.ec.europa.eu/notizie-ed-eventi/notizie-0_it'
 status = 'active'
 
 target_date = date(2021, 7, 20)
 
 driver = webdriver.Firefox()
 
-temp_df = eif(url, driver, target_date)
+temp_df = ecgeneric(url, driver, target_date)
 
 temp_df['pub_date'].apply(standardize_date)
 
