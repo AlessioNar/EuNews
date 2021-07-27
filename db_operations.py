@@ -1,8 +1,6 @@
-import pandas as pd
 from db_credentials import connection
-import re
 
-# Check if a table exists and if not it creates it
+# Creates articles table
 def create_table():
     conn = connection()
     cursor = conn.cursor()
@@ -18,17 +16,18 @@ def create_table():
     );""")
     conn.commit()
 
-
+# Takes as inputs the fields of each article and inserts them in a MySQL database
 def insert_articles(title, pub_date, snippet, url):
-	## I need to escape single quotes
-	#snippet = re.sub(snippet, "'", "''")
+
 	# Establishing the connection
 	conn = connection()
-	#title = conn.escape_string(title)
-
 	cursor = conn.cursor()
+
+	# Insert query
 	cursor.execute(f"""INSERT IGNORE INTO articles(title, pub_date, snippet, url)
 					VALUES(%s,%s,%s,%s);""", (title, pub_date, snippet, url))
+
+	# Commit and close
 	conn.commit()
 	cursor.close()
 	conn.close()
