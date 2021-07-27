@@ -5,6 +5,9 @@ from parsers.apre import ApreScraper
 from parsers.areflh import AreflhScraper
 from parsers.consigliodeuropait import ConsiglioDEuropaITScraper
 from parsers.consiglioeuropeo import ConsiglioEuropeo
+from parsers.cor import CORScraper
+from parsers.cpmr import CPMRScraper
+from parsers.earlall import EarlAllScraper
 
 target_date = date(2021, 6, 20)
 driver = webdriver.Firefox()
@@ -12,9 +15,13 @@ driver = webdriver.Firefox()
 #test = ApreScraper(driver, target_date)
 #test = AreflhScraper(driver, target_date)
 #test = ConsiglioDEuropaITScraper(driver, target_date)
-test = ConsiglioEuropeo(driver, target_date)
+#test = ConsiglioEuropeo(driver, target_date)
+#test = CORScraper(driver, target_date)
+#test = CPMRScraper(driver, target_date)
+test = EarlAllScraper(driver, target_date)
 df = test.scrape()
 
 print(df)
+print(df['pub_date'])
 
 driver.close()
