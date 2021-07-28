@@ -62,7 +62,6 @@ def espon(url, driver, max_date):
     return final_df
 
 ## INTERACT is still missing
-
 def promis(url, driver, max_date):
 
     driver.get(url)
