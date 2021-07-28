@@ -15,6 +15,7 @@ from parsers.eit import EITScraper
 from parsers.enicbcmed import EniCbcMedScraper
 from parsers.espon import EsponScraper
 from parsers.eucommission import EUCommissionScraper
+from parsers.euparliament import EUParliamentScraper
 
 
 from db_operations import *
@@ -43,6 +44,8 @@ driver = webdriver.Firefox()
 #test = EsponScraper(driver, target_date)
 
 #test = EUCommissionScraper(driver, target_date)
+test = EUParliamentScraper(driver, target_date)
+
 df = test.scrape()
 for id, article in df.iterrows():
     insert_articles(article['title'], article['pub_date'].strftime("%Y-%m-%d"), article['snippet'], article['url'])
