@@ -5,104 +5,6 @@ import pandas as pd
 import re
 import time
 
-def eit(url, driver, max_date):
-
-    driver.get(url)
-    time.sleep(3)
-
-    is_paginated = True
-    final_df = pd.DataFrame()
-
-    while is_paginated:
-        titles, links, pub_dates, snippets = initialize_lists()
-
-        try:
-            cookies = driver.find_element_by_xpath('//button[@class="agree-button"]')
-            cookies.click()
-        except:
-            print("cookies are already ok")
-
-        article_containers = driver.find_element_by_xpath('//div[@class="news eit-list"]')
-
-        article_containers = article_containers.get_attribute('innerHTML')
-        soup = bs4.BeautifulSoup(article_containers, 'lxml')
-
-        list_item = soup.findAll("li")
-        for item in list_item:
-            title = item.a.text
-            link = 'https://eit.europa.eu' + item.a['href']
-            pub_date = item.span.text
-            snippet = ''
-            titles.append(title)
-            links.append(link)
-            pub_dates.append(pub_date)
-            snippets.append(snippet)
-
-        for index, one_date in enumerate(pub_dates):
-            pub_dates[index] = dateparser.parse(one_date, settings={'DATE_ORDER': 'DMY'}).date()
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
-                        columns =['title', 'pub_date', 'snippet', 'link'])
-
-        final_df = final_df.append(df)
-
-        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
-            is_paginated = False
-        else:
-            button = driver.find_element_by_xpath('//a[@title="Go to next page"]')
-            button.click()
-
-        time.sleep(2)
-
-    return final_df
-
-def enicbcmed(url, driver, max_date):
-
-    driver.get(url)
-    time.sleep(3)
-
-    is_paginated = True
-    df = pd.DataFrame()
-    counter = 0
-    while is_paginated:
-        titles, links, pub_dates, snippets = initialize_lists()
-
-        try:
-            cookies = driver.find_element_by_xpath('//button[@class="decline-button eu-cookie-compliance-default-button"]')
-            cookies.click()
-        except:
-            print("cookies are already ok")
-
-        container = driver.find_element_by_xpath('//div[@class="block-items"]')
-
-        soup = get_soup(container)
-
-        list_item = soup.find_all('div', {'class':'block-body-content'})
-        for item in list_item:
-            title = item.a.h6.text.strip()
-            link = 'http://www.enicbcmed.eu/' + item.a['href']
-            snippet = item.p.text.strip()
-            titles.append(title)
-            links.append(link)
-            snippets.append(snippet)
-        list_item = soup.find_all('time', {'class':'datetime'})
-        for item in list_item:
-            pub_date = item['datetime']
-            pub_dates.append(pub_date)
-
-        temp_df = create_df(titles, pub_dates, snippets, links)
-        df = df.append(temp_df)
-
-        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
-            is_paginated = False
-        else:
-            counter = counter + 1
-            next_page = 'http://www.enicbcmed.eu/info-center/news?field_tags_target_id=All&keys=&page=' + str(counter)
-            driver.get(next_page)
-
-        time.sleep(2)
-
-    return df
-
 ## there are two more sections to check
 def espon(url, driver, max_date):
 
@@ -114,7 +16,7 @@ def espon(url, driver, max_date):
 
     while is_paginated:
         titles = []
-        links = []
+        urls = []
         pub_dates = []
         snippets = []
 
@@ -126,9 +28,9 @@ def espon(url, driver, max_date):
         list_item = soup.find_all('div', {'class':'views-field views-field-title'})
         for item in list_item:
             title = item.span.a.text
-            link = 'https://www.espon.eu' + item.span.a['href']
+            url = 'https://www.espon.eu' + item.span.a['href']
             titles.append(title)
-            links.append(link)
+            urls.append(url)
         list_item = soup.find_all('div', {'class':'views-field views-field-created'})
         for item in list_item:
             pub_date = item.span.small.span.next_sibling
@@ -141,8 +43,8 @@ def espon(url, driver, max_date):
         for index, one_date in enumerate(pub_dates):
             pub_dates[index] = dateparser.parse(one_date).date()
 
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
-                        columns =['title', 'pub_date', 'snippet', 'link'])
+        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, urls)),
+                        columns =['title', 'pub_date', 'snippet', 'url'])
 
         final_df = final_df.append(df)
 
@@ -170,7 +72,7 @@ def eucommission(url, driver, max_date):
 
     while is_paginated:
         titles = []
-        links = []
+        urls = []
         pub_dates = []
         snippets = []
 
@@ -185,7 +87,7 @@ def eucommission(url, driver, max_date):
             if type(article) is bs4.element.Tag:
                 category = item.div.div.span.text
                 pub_date = item.div.div.find_all("span", {"ngcontent-c1":""})[1].text
-                link = 'https://ec.europa.eu/commission/presscorner/' + article.a['href']
+                url = 'https://ec.europa.eu/commission/presscorner/' + article.a['href']
                 if type(item.div.h3) is bs4.element.Tag:
                     title = item.div.h3.text
                 else:
@@ -197,13 +99,13 @@ def eucommission(url, driver, max_date):
 
                 titles.append(title)
                 pub_dates.append(pub_date)
-                links.append(link)
+                urls.append(url)
                 snippets.append(snippet)
 
         for index, one_date in enumerate(pub_dates):
             pub_dates[index] = dateparser.parse(one_date).date()
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
-                        columns =['title', 'pub_date', 'snippet', 'link'])
+        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, urls)),
+                        columns =['title', 'pub_date', 'snippet', 'url'])
 
         final_df = final_df.append(df)
 
@@ -230,7 +132,7 @@ def euparliament(url, driver, max_date):
 
     while is_paginated:
         titles = []
-        links = []
+        urls = []
         pub_dates = []
         snippets = []
 
@@ -248,9 +150,9 @@ def euparliament(url, driver, max_date):
         list_item = soup.find_all("div", {"class":"ep_title"})
         for item in list_item:
             title = item.a.div.span.text.strip()
-            link = item.a['href']
+            url = item.a['href']
             titles.append(title)
-            links.append(link)
+            urls.append(url)
         list_item = soup.find_all("div", {"class":"ep-a_text"})
         for item in list_item:
             snippet = item.text.strip()
@@ -263,8 +165,8 @@ def euparliament(url, driver, max_date):
 
         for index, one_date in enumerate(pub_dates):
             pub_dates[index] = dateparser.parse(one_date).date()
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
-                        columns =['title', 'pub_date', 'snippet', 'link'])
+        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, urls)),
+                        columns =['title', 'pub_date', 'snippet', 'url'])
 
         final_df = final_df.append(df)
 
@@ -291,7 +193,7 @@ def euregha(url, driver, max_date):
 
     while is_paginated:
         titles = []
-        links = []
+        urls = []
         pub_dates = []
         snippets = []
 
@@ -303,19 +205,19 @@ def euregha(url, driver, max_date):
         list_item = soup.find_all('article')
         for item in list_item:
             title = item.h4.text
-            link = item.h4.a['href']
+            url = item.h4.a['href']
             pub_date = item.p.text
             snippet = ''
             titles.append(title)
-            links.append(link)
+            urls.append(url)
             pub_dates.append(pub_date)
             snippets.append(snippet)
 
 
         for index, one_date in enumerate(pub_dates):
             pub_dates[index] = dateparser.parse(one_date).date()
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
-                        columns =['title', 'pub_date', 'snippet', 'link'])
+        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, urls)),
+                        columns =['title', 'pub_date', 'snippet', 'url'])
 
         final_df = final_df.append(df)
 
@@ -341,7 +243,7 @@ def europeanagency(url, driver, max_date):
 
     while is_paginated:
         titles = []
-        links = []
+        urls = []
         pub_dates = []
         snippets = []
 
@@ -359,10 +261,10 @@ def europeanagency(url, driver, max_date):
         list_item = soup.find_all('h3', {'class':'views-field views-field-title'})
         for item in list_item:
             title = item.a.text.strip()
-            link = 'https://www.europeanagency.org' + item.a['href']
+            url = 'https://www.europeanagency.org' + item.a['href']
             snippet = item.next_sibling
             titles.append(title)
-            links.append(link)
+            urls.append(url)
             if snippet != '':
                 snippets.append(snippet)
 
@@ -373,8 +275,8 @@ def europeanagency(url, driver, max_date):
 
         for index, one_date in enumerate(pub_dates):
             pub_dates[index] = dateparser.parse(one_date).date()
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
-                        columns =['title', 'pub_date', 'snippet', 'link'])
+        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, urls)),
+                        columns =['title', 'pub_date', 'snippet', 'url'])
 
         final_df = final_df.append(df)
 
@@ -398,7 +300,7 @@ def eurostat(url, driver, max_date):
     final_df = pd.DataFrame()
 
     while is_paginated:
-        titles, links, pub_dates, snippets = initialize_lists()
+        titles, urls, pub_dates, snippets = initialize_lists()
 
         container = driver.find_element_by_xpath('//ul[@class="product-list"]')
 
@@ -407,11 +309,11 @@ def eurostat(url, driver, max_date):
         list_item = soup.find_all("div", {"class": "product-title"})
         for item in list_item:
             title = item.text.strip()
-            link = item.a['href']
+            url = item.a['href']
             snippet = ''
 
             titles.append(title)
-            links.append(link)
+            urls.append(url)
             snippets.append(snippet)
 
         list_item = soup.find_all("div", {"class": "product-date"})
@@ -419,7 +321,7 @@ def eurostat(url, driver, max_date):
             pub_date = item.text.strip()
             pub_dates.append(pub_date)
 
-        temp_df = create_df(titles, pub_dates, snippets, links, dayfirst=True)
+        temp_df = create_df(titles, pub_dates, snippets, urls, dayfirst=True)
 
         df = df.append(temp_df)
 
@@ -450,7 +352,7 @@ def eusalp(url, driver, max_date):
 
     while is_paginated:
         titles = []
-        links = []
+        urls = []
         pub_dates = []
         snippets = []
 
@@ -462,8 +364,8 @@ def eusalp(url, driver, max_date):
         list_item = soup.find_all("h3", {"class": "views-field views-field-title event-box-title"})
         for item in list_item:
             title = item.span.a.text
-            link = 'https://www.alpine-region.eu' + item.span.a['href']
-            links.append(link)
+            url = 'https://www.alpine-region.eu' + item.span.a['href']
+            urls.append(url)
             titles.append(title)
 
         list_item = soup.find_all("span", {"class": "date-display-single"})
@@ -478,8 +380,8 @@ def eusalp(url, driver, max_date):
 
         for index, one_date in enumerate(pub_dates):
             pub_dates[index] = dateparser.parse(one_date).date()
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
-                        columns =['title', 'pub_date', 'snippet', 'link'])
+        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, urls)),
+                        columns =['title', 'pub_date', 'snippet', 'url'])
 
         final_df = final_df.append(df)
 
@@ -503,7 +405,7 @@ def imi(url, driver, max_date):
     is_paginated = True
     df = pd.DataFrame()
 
-    titles, links, pub_dates, snippets = initialize_lists()
+    titles, urls, pub_dates, snippets = initialize_lists()
     container = driver.find_element_by_xpath('//div[@class="view-grouping-content info-box light-grey-bg"]')
 
     soup = get_soup(container)
@@ -511,9 +413,9 @@ def imi(url, driver, max_date):
     list_item = soup.find_all("div", {"class": "views-row article-row"})
     for item in list_item:
         title = item.div.span.article.div.div.h4.text
-        link = 'https://www.imi.europa.eu' + item.div.span.article.div.div.h4.a['href']
+        url = 'https://www.imi.europa.eu' + item.div.span.article.div.div.h4.a['href']
         titles.append(title)
-        links.append(link)
+        urls.append(url)
 
     list_item = soup.find_all("span", {"class": "published-date"})
     for item in list_item:
@@ -525,7 +427,7 @@ def imi(url, driver, max_date):
         snippet = item.text
         snippets.append(snippet)
 
-    temp_df = create_df(titles, pub_dates, snippets, links, dayfirst=True)
+    temp_df = create_df(titles, pub_dates, snippets, urls, dayfirst=True)
 
     df = df.append(temp_df)
 
@@ -549,7 +451,7 @@ def interreg(url, driver, max_date):
 
     while is_paginated:
         titles = []
-        links = []
+        urls = []
         pub_dates = []
         snippets = []
 
@@ -561,19 +463,19 @@ def interreg(url, driver, max_date):
         list_item = soup.find_all('section', {'class','search-result__item search-result__item--news'})
         for item in list_item:
             title = item.find('div', {'class':'search-result__item__title'})
-            link = title.a['href']
+            url = title.a['href']
             title = title.a.text.strip()
             pub_date = item.find('span', {'class': 'bold'}).text
             snippet = item.find('div', {'class':'clamp-this__2-lines'}).text.strip()
             titles.append(title)
-            links.append(link)
+            urls.append(url)
             pub_dates.append(pub_date)
             snippets.append(snippet)
 
         for index, one_date in enumerate(pub_dates):
             pub_dates[index] = dateparser.parse(one_date).date()
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
-                        columns =['title', 'pub_date', 'snippet', 'link'])
+        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, urls)),
+                        columns =['title', 'pub_date', 'snippet', 'url'])
 
         final_df = final_df.append(df)
 
@@ -597,7 +499,7 @@ def jrc(url, driver, max_date):
 
     while is_paginated:
         titles = []
-        links = []
+        urls = []
         pub_dates = []
         snippets = []
 
@@ -610,18 +512,18 @@ def jrc(url, driver, max_date):
         for item in list_item:
             titletag = item.find('div', {'class':'field field-name-title field-type-ds field-label-hidden'})
             title = titletag.h3.text
-            link = 'https://ec.europa.eu' + titletag.a['href']
+            url = 'https://ec.europa.eu' + titletag.a['href']
             snippet = item.find('div', {'property':'content:encoded'}).text.strip()
             pub_date = item.find('div', {'class':'date-cont start-date'}).text.strip()
             titles.append(title)
-            links.append(link)
+            urls.append(url)
             snippets.append(snippet)
             pub_dates.append(pub_date)
 
         for index, one_date in enumerate(pub_dates):
             pub_dates[index] = dateparser.parse(one_date).date()
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
-                        columns =['title', 'pub_date', 'snippet', 'link'])
+        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, urls)),
+                        columns =['title', 'pub_date', 'snippet', 'url'])
 
         final_df = final_df.append(df)
 
@@ -645,7 +547,7 @@ def promis(url, driver, max_date):
 
     while is_paginated:
         titles = []
-        links = []
+        urls = []
         pub_dates = []
         snippets = []
 
@@ -657,19 +559,19 @@ def promis(url, driver, max_date):
         list_item = soup.find_all('div', {'class':'notiziaConFoto'})
         for item in list_item:
             title = item.find('h1').text.strip()
-            link = 'https://www.promisalute.it' + item.find('a')['href']
+            url = 'https://www.promisalute.it' + item.find('a')['href']
             snippet = item.find('h3').text.strip()
             pub_date = item.find('h2').text.strip()
             pub_date = pub_date.split('\n')[1].strip()
             titles.append(title)
-            links.append(link)
+            urls.append(url)
             snippets.append(snippet)
             pub_dates.append(pub_date)
 
         for index, one_date in enumerate(pub_dates):
             pub_dates[index] = dateparser.parse(one_date).date()
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
-                        columns =['title', 'pub_date', 'snippet', 'link'])
+        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, urls)),
+                        columns =['title', 'pub_date', 'snippet', 'url'])
 
         final_df = final_df.append(df)
 
@@ -707,7 +609,7 @@ def ecgeneric(url, driver, max_date):
         print('no cookies')
 
     while is_paginated:
-        titles, links, pub_dates, snippets = initialize_lists()
+        titles, urls, pub_dates, snippets = initialize_lists()
 
         container = driver.find_element_by_xpath('//div[@class="view-content"]')
 
@@ -716,7 +618,7 @@ def ecgeneric(url, driver, max_date):
         list_item = soup.find_all("div", {"class": "listing__column-main"})
         for item in list_item:
             title = item.div.next_sibling.text.strip()
-            link = item.div.next_sibling.a['href']
+            url = item.div.next_sibling.a['href']
             pub_date = item.div.span.next_sibling.text.strip()
             snippet = '' #item.find_all('p')
             #if snippet == '':
@@ -726,9 +628,9 @@ def ecgeneric(url, driver, max_date):
 
             titles.append(title)
             pub_dates.append(pub_date)
-            links.append(link)
+            urls.append(url)
             snippets.append(snippet)
-        temp_df = create_df(titles, pub_dates, snippets, links)
+        temp_df = create_df(titles, pub_dates, snippets, urls)
         df = df.append(temp_df)
 
         if df.iloc[len(df) - 1]['pub_date'] <= max_date:
@@ -764,7 +666,7 @@ def ecitalia(url, driver, max_date):
         print('no cookies')
 
     while is_paginated:
-        titles, links, pub_dates, snippets = initialize_lists()
+        titles, urls, pub_dates, snippets = initialize_lists()
 
         container = driver.find_element_by_xpath('//div[@class="ecl-content-item-block"]')
 
@@ -773,7 +675,7 @@ def ecitalia(url, driver, max_date):
         list_item = soup.find_all("article")
         for item in list_item:
             title = item.div.next_sibling.div.next_sibling.a.text.strip()
-            link = 'https://italy.representation.ec.europa.eu' + item.div.next_sibling.div.next_sibling.a['href']
+            url = 'https://italy.representation.ec.europa.eu' + item.div.next_sibling.div.next_sibling.a['href']
             pub_date = item.div.next_sibling.div.time['datetime']
             snippet = '' #item.find_all('p')
             #if snippet == '':
@@ -783,9 +685,9 @@ def ecitalia(url, driver, max_date):
 
             titles.append(title)
             pub_dates.append(pub_date)
-            links.append(link)
+            urls.append(url)
             snippets.append(snippet)
-        temp_df = create_df(titles, pub_dates, snippets, links)
+        temp_df = create_df(titles, pub_dates, snippets, urls)
         df = df.append(temp_df)
 
         if df.iloc[len(df) - 1]['pub_date'] <= max_date:
@@ -814,7 +716,7 @@ def urbact(url, driver, max_date):
 
     while is_paginated:
         titles = []
-        links = []
+        urls = []
         pub_dates = []
         snippets = []
 
@@ -826,9 +728,9 @@ def urbact(url, driver, max_date):
         list_item = soup.find_all('h2', {'class':'node__title node-title'})
         for item in list_item:
             title = item.a.text
-            link = 'https://urbact.eu' + item.a['href']
+            url = 'https://urbact.eu' + item.a['href']
             titles.append(title)
-            links.append(link)
+            urls.append(url)
         list_item = soup.find_all('time', {'pubdate':''})
         for item in list_item:
             pub_date = item['datetime']
@@ -841,8 +743,8 @@ def urbact(url, driver, max_date):
 
         for index, one_date in enumerate(pub_dates):
             pub_dates[index] = dateparser.parse(one_date).date()
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, links)),
-                        columns =['title', 'pub_date', 'snippet', 'link'])
+        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, urls)),
+                        columns =['title', 'pub_date', 'snippet', 'url'])
 
         final_df = final_df.append(df)
 
