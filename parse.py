@@ -431,7 +431,6 @@ def scrape_articles(soup, source):
             links.append(link)
             snippets.append(snippet)
             pub_dates.append(pub_date)
-
     elif source == 'promis':
         list_item = soup.find_all('div', {'class':'notiziaConFoto'})
         for item in list_item:
@@ -447,6 +446,7 @@ def scrape_articles(soup, source):
     else:
         print("There is not yet a retrieval method for this website")
         return 1
+
     for index, one_date in enumerate(pub_dates):
         pub_dates[index] = dateparser.parse(one_date)
         pub_dates[index] = np.datetime64(pub_dates[index]).astype(datetime)

@@ -166,7 +166,7 @@ class MainWindow(QtWidgets.QMainWindow):
         selected = self.tableview.selectedIndexes()
         if selected:
             model = self.tableview.model()
-            index = model.index(selected[0].row(), 4)
+            index = model.index(selected[0].row(), 3)
 
             url = str(model.data(index, QtCore.Qt.DisplayRole))
             ## This works I just need to find the url
