@@ -11,6 +11,10 @@ from parsers.earlall import EarlAllScraper
 from parsers.eea import EEAScraper
 from parsers.eib import EIBScraper
 from parsers.eif import EIFScraper
+from parsers.eit import EITScraper
+from parsers.enicbcmed import EniCbcMedScraper
+from parsers.espon import EsponScraper
+
 
 from db_operations import *
 
@@ -29,7 +33,9 @@ driver = webdriver.Firefox()
 #test = EarlAllScraper(driver, target_date)
 #test = EIBScraper(driver, target_date)
 #test = EIFScraper(driver, target_date)
-
+#test = EITScraper(driver, target_date)
+#test = EniCbcMedScraper(driver, target_date)
+test = EsponScraper(driver, target_date)
 
 df = test.scrape()
 for id, article in df.iterrows():
