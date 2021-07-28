@@ -6,6 +6,8 @@ consiglioeuropeo,https://www.consilium.europa.eu/it/press/press-releases/,active
 cor,https://cor.europa.eu/it/news/Pages/default.aspx,active
 cprm,https://cpmr.org/news/,active
 earlall,https://www.earlall.eu/news/,active
+ecgeneric,https://ec.europa.eu/info/news_it?department=All&field_announcement_type_value_i18n=All&persons=All&research_areas=All,active
+ecitalia,https://italy.representation.ec.europa.eu/notizie-ed-eventi/notizie-0_it,active
 eea,https://www.eea.europa.eu/highlights#c7=en&c6=&b_start=0,active
 eib,https://www.eib.org/en/press/all/index.htm?q=&sortColumn=startDate&sortDir=desc&pageNumber=0&itemPerPage=10&pageable=true&language=EN&defaultLanguage=EN&mediaTypes=press-release&mediaTypes=media-new&mediaTypes=media-speech&mediaTypes=generic-video&ormediaTypes=true&yearFrom=&yearTo=&orMediaTypes=true&orTags=true&orCountries=true&orRegions=true&orSubjects=true,active
 eif,https://www.eif.org/news_centre/press_releases/all/index.htm?year=0000&category=&keywordList=,active
@@ -19,10 +21,8 @@ europeanagency,https://www.european-agency.org/news,active
 eurostat,https://ec.europa.eu/eurostat/news/whats-new,active
 eusalp,https://www.alpine-region.eu/news,active
 imi,https://www.imi.europa.eu/news-events/newsroom,active
-interact,https://www.interact-eu.net/#news,todo
 interreg,https://www.interregeurope.eu/search/?tx_tevsearch_search%5BentityTypes%5D%5B0%5D=news&tx_tevsearch_search%5BfilterMap%5D=news_and_events&cHash=77de13491bcdbf115bcc65131e10499a,active
-jrc,https://ec.europa.eu/jrc/en/news-list, active
-parlamento_europeo_thinktank_eventi,https://www.europarl.europa.eu/thinktank/it/upcomingevents.html,todo
+jrc,https://ec.europa.eu/jrc/en/news-list,active
 promis,https://www.promisalute.it/servizi/notizie/notizie_fase01.aspx?categoriaVisualizzata=7,active
 necstour,http://www.necstour.eu/event,broken
 ec_education_culture,https://ec.europa.eu/education/news_en,todo
@@ -35,7 +35,9 @@ ectrade,https://trade.ec.europa.eu/doclib/press/,todo
 first_eventi,https://first.aster.it/_aster_/eventi,todo
 fse,https://ec.europa.eu/esf/main.jsp?catId=67&langId=it,todo
 interact,https://www.interact-eu.net/#news,todo
+interact,https://www.interact-eu.net/#news,todo
 necstour,https://necstour.eu/news,todo
+parlamento_europeo_thinktank_eventi,https://www.europarl.europa.eu/thinktank/it/upcomingevents.html,todo
 parlamento_europeo_thinktank_eventi,https://www.europarl.europa.eu/thinktank/it/upcomingevents.html,todo
 pon,http://www.istruzione.it/pon/,todo
 urbact,https://urbact.eu/urbact-news,todo
