@@ -1,15 +1,19 @@
-from scraper import Scraper
+from scraper import Scraper, PaginatedScraper
 import bs4
 import time
 
-class CPMRScraper(Scraper):
+
+## I don't know why but it does not take up all the articles but only the first 4
+class EurostatScraper(PaginatedScraper):
 
     def __init__(self, driver, max_date):
         self.driver = driver
         self.max_date = max_date
-        self.cookie_xpath = '//span[@id="reject_cookies"]'
-        self.container_xpath = '//div[@id="posts-container"]'
-        self.url = 'https://cpmr.org/news/'
+        self.url = 'https://ec.europa.eu/eurostat/news/whats-new'
+        #self.cookie_xpath = '//a[contains(text(), "Accept only essential cookies")]'
+        self.container_xpath = '//ul[@class="product-list"]'
+        self.next_xpath = '//a[contains(text(), "Next")]'
+
 
     def std_date(self, to_date):
         return self.std_date_day(to_date)
@@ -20,32 +24,34 @@ class CPMRScraper(Scraper):
         titles, urls, pub_dates, snippets = self.initialize_lists()
 
         # Initialize variables for while
-        counter = 1
         is_paginated = True
-
         while is_paginated:
 
+            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(1)
+            
             soup = self.extract_html()
 
-            list_item = soup.find_all('div', {'class':'fusion-post-content post-content'})
+            list_item = soup.find_all("div", {"class": "product-title"})
             for item in list_item:
-                title = item.h2.text.strip()
-                url = item.h2.a['href']
-                snippet = item.div.p.text.strip()
+                title = item.text.strip()
+                url = item.a['href']
+                snippet = ''
+
                 titles.append(title)
                 urls.append(url)
                 snippets.append(snippet)
-            list_item = soup.find_all('div', {'class':'fusion-date-box'})
+
+            list_item = soup.find_all("div", {"class": "product-date"})
             for item in list_item:
                 pub_date = item.text.strip()
                 pub_date = self.std_date(pub_date)
                 pub_dates.append(pub_date)
 
+
             if pub_dates[len(pub_dates) - 1] <= self.max_date:
                 is_paginated = False
             else:
-                counter = counter + 1
-                self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(2)
+                self.turn_page()
 
         return titles, pub_dates, snippets, urls

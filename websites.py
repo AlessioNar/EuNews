@@ -61,64 +61,6 @@ def espon(url, driver, max_date):
 
     return final_df
 
-def europeanagency(url, driver, max_date):
-
-    driver.get(url)
-    time.sleep(3)
-
-    is_paginated = True
-    final_df = pd.DataFrame()
-
-    while is_paginated:
-        titles = []
-        urls = []
-        pub_dates = []
-        snippets = []
-
-        try:
-            cookies = driver.find_element_by_xpath('//button[@class="decline-button eu-cookie-compliance-default-button"]')
-            cookies.click()
-        except:
-            print("cookies are already ok")
-
-        article_containers = driver.find_element_by_xpath('//div[@class="view-content"]')
-
-        article_containers = article_containers.get_attribute('innerHTML')
-        soup = bs4.BeautifulSoup(article_containers, 'lxml')
-
-        list_item = soup.find_all('h3', {'class':'views-field views-field-title'})
-        for item in list_item:
-            title = item.a.text.strip()
-            url = 'https://www.europeanagency.org' + item.a['href']
-            snippet = item.next_sibling
-            titles.append(title)
-            urls.append(url)
-            if snippet != '':
-                snippets.append(snippet)
-
-        list_item = soup.find_all('footer', {'class':'views-field views-field-created'})
-        for item in list_item:
-            pub_date = item.text.strip()
-            pub_dates.append(pub_date)
-
-        for index, one_date in enumerate(pub_dates):
-            pub_dates[index] = dateparser.parse(one_date).date()
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, urls)),
-                        columns =['title', 'pub_date', 'snippet', 'url'])
-
-        final_df = final_df.append(df)
-
-
-        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
-            is_paginated = False
-        else:
-            button = driver.find_element_by_xpath('//a[@title="Go to next page"]')
-            button.click()
-
-        time.sleep(2)
-
-    return final_df
-
 def eurostat(url, driver, max_date):
 
     driver.get(url)
