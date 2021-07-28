@@ -28,6 +28,9 @@ class Scraper(ABC):
         self.driver.get(self.url)
         time.sleep(3)
 
+    def turn_page(self):
+        pass
+
     def preprocess(self):
         pass
 
@@ -67,3 +70,10 @@ class Scraper(ABC):
         self.cookies_removal()
         titles, pub_dates, snippets, urls = self.parse()
         return self.create_df(titles, pub_dates, snippets, urls)
+
+
+class PaginatedScraper(Scraper):
+    def turn_page(self):
+        button = self.driver.find_element_by_xpath(self.next_xpath)
+        button.click()
+        time.sleep(2)
