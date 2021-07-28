@@ -9,6 +9,8 @@ from parsers.cor import CORScraper
 from parsers.cpmr import CPMRScraper
 from parsers.earlall import EarlAllScraper
 from parsers.eea import EEAScraper
+from parsers.eib import EIBScraper
+from parsers.eif import EIFScraper
 
 from db_operations import *
 
@@ -17,18 +19,17 @@ target_date = date(2021, 6, 20)
 driver = webdriver.Firefox()
 
 #test = ApreScraper(driver, target_date)
-
-test = AreflhScraper(driver, target_date)
-
+#test = AreflhScraper(driver, target_date)
 #test = ConsiglioDEuropaITScraper(driver, target_date)
-
 #test = ConsiglioEuropeo(driver, target_date)
-
 #test = CORScraper(driver, target_date)
-
 #test = CPMRScraper(driver, target_date)
-
+# To check
 #test = EEAScraper(driver, target_date)
+#test = EarlAllScraper(driver, target_date)
+#test = EIBScraper(driver, target_date)
+#test = EIFScraper(driver, target_date)
+
 
 df = test.scrape()
 for id, article in df.iterrows():
