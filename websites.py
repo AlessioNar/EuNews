@@ -62,55 +62,6 @@ def espon(url, driver, max_date):
     return final_df
 
 ## INTERACT is still missing
-def promis(url, driver, max_date):
-
-    driver.get(url)
-    time.sleep(3)
-
-    is_paginated = True
-    final_df = pd.DataFrame()
-
-    while is_paginated:
-        titles = []
-        urls = []
-        pub_dates = []
-        snippets = []
-
-        article_containers = driver.find_element_by_xpath('//div[@id="boxNotizieArchivio"]')
-
-        article_containers = article_containers.get_attribute('innerHTML')
-        soup = bs4.BeautifulSoup(article_containers, 'lxml')
-
-        list_item = soup.find_all('div', {'class':'notiziaConFoto'})
-        for item in list_item:
-            title = item.find('h1').text.strip()
-            url = 'https://www.promisalute.it' + item.find('a')['href']
-            snippet = item.find('h3').text.strip()
-            pub_date = item.find('h2').text.strip()
-            pub_date = pub_date.split('\n')[1].strip()
-            titles.append(title)
-            urls.append(url)
-            snippets.append(snippet)
-            pub_dates.append(pub_date)
-
-        for index, one_date in enumerate(pub_dates):
-            pub_dates[index] = dateparser.parse(one_date).date()
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, urls)),
-                        columns =['title', 'pub_date', 'snippet', 'url'])
-
-        final_df = final_df.append(df)
-
-
-        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
-            is_paginated = False
-        else:
-            button = driver.find_element_by_xpath('//a[@id="formid_ElencoNotizie_Paginazione_Paginazione_Link_Successiva"]')
-            button.click()
-
-        time.sleep(2)
-
-    return final_df
-
 def ecgeneric(url, driver, max_date):
 
     driver.get(url)
