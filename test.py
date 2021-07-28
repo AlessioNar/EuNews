@@ -20,6 +20,7 @@ from parsers.euregha import EureghaScraper
 from parsers.europeanagency import EuropeanAgencyScraper
 from parsers.eurostat import EurostatScraper
 from parsers.eusalp import EusalpScraper
+from parsers.imi import IMIScraper
 
 
 from db_operations import *
@@ -52,7 +53,8 @@ driver = webdriver.Firefox()
 #test = EureghaScraper(driver, target_date)
 #test = EuropeanAgencyScraper(driver, target_date)
 #test = EurostatScraper(driver, target_date)
-test = EusalpScraper(driver, target_date)
+#test = EusalpScraper(driver, target_date)
+test = IMIScraper(driver, target_date)
 
 
 df = test.scrape()
