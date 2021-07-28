@@ -24,11 +24,13 @@ from parsers.imi import IMIScraper
 from parsers.interreg import InterregScraper
 from parsers.jrc import JRCScraper
 from parsers.promis import PromisScraper
+from parsers.ecgeneric import ECGenericScraper
+
 
 from db_operations import *
 
 create_table()
-target_date = date(2021, 6, 20)
+target_date = date(2021, 7, 20)
 driver = webdriver.Firefox()
 #test = ApreScraper(driver, target_date)
 #test = AreflhScraper(driver, target_date)
@@ -59,7 +61,12 @@ driver = webdriver.Firefox()
 #test = IMIScraper(driver, target_date)
 #test = InterregScraper(driver, target_date)
 #test = JRCScraper(driver, target_date)
-test = PromisScraper(driver, target_date)
+#test = PromisScraper(driver, target_date)
+
+# This does not work
+test = ECGenericScraper(driver, target_date)
+
+
 
 df = test.scrape()
 for id, article in df.iterrows():
