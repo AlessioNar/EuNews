@@ -61,56 +61,6 @@ def espon(url, driver, max_date):
 
     return final_df
 
-def euregha(url, driver, max_date):
-
-    driver.get(url)
-    time.sleep(3)
-
-    is_paginated = True
-    final_df = pd.DataFrame()
-
-    while is_paginated:
-        titles = []
-        urls = []
-        pub_dates = []
-        snippets = []
-
-        article_containers = driver.find_element_by_xpath('//div[@class="et_pb_blog_grid clearfix  et_pb_text_align_center"]')
-
-        article_containers = article_containers.get_attribute('innerHTML')
-        soup = bs4.BeautifulSoup(article_containers, 'lxml')
-
-        list_item = soup.find_all('article')
-        for item in list_item:
-            title = item.h4.text
-            url = item.h4.a['href']
-            pub_date = item.p.text
-            snippet = ''
-            titles.append(title)
-            urls.append(url)
-            pub_dates.append(pub_date)
-            snippets.append(snippet)
-
-
-        for index, one_date in enumerate(pub_dates):
-            pub_dates[index] = dateparser.parse(one_date).date()
-        df = pd.DataFrame(list(zip(titles, pub_dates, snippets, urls)),
-                        columns =['title', 'pub_date', 'snippet', 'url'])
-
-        final_df = final_df.append(df)
-
-
-        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
-            is_paginated = False
-        else:
-            button = driver.find_element_by_xpath("//a[contains(text(), 'Older Entries')]")
-            button.click()
-
-
-        time.sleep(2)
-
-    return final_df
-
 def europeanagency(url, driver, max_date):
 
     driver.get(url)
@@ -314,7 +264,6 @@ def imi(url, driver, max_date):
     return df
 
 ## INTERACT is still missing
-
 def interreg(url, driver, max_date):
 
     driver.get(url)
