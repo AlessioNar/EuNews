@@ -22,7 +22,7 @@ from parsers.eurostat import EurostatScraper
 from parsers.eusalp import EusalpScraper
 from parsers.imi import IMIScraper
 from parsers.interreg import InterregScraper
-
+from parsers.jrc import JRCScraper
 
 from db_operations import *
 
@@ -56,8 +56,8 @@ driver = webdriver.Firefox()
 #test = EurostatScraper(driver, target_date)
 #test = EusalpScraper(driver, target_date)
 #test = IMIScraper(driver, target_date)
-test = InterregScraper(driver, target_date)
-
+#test = InterregScraper(driver, target_date)
+test = JRCScraper(driver, target_date)
 
 df = test.scrape()
 for id, article in df.iterrows():
