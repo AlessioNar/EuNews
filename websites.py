@@ -61,45 +61,6 @@ def espon(url, driver, max_date):
 
     return final_df
 
-## ONLY GETS 2021, even if 2020 and 2019 are on the same page
-def imi(url, driver, max_date):
-
-    driver.get(url)
-    time.sleep(3)
-
-    is_paginated = True
-    df = pd.DataFrame()
-
-    titles, urls, pub_dates, snippets = initialize_lists()
-    container = driver.find_element_by_xpath('//div[@class="view-grouping-content info-box light-grey-bg"]')
-
-    soup = get_soup(container)
-
-    list_item = soup.find_all("div", {"class": "views-row article-row"})
-    for item in list_item:
-        title = item.div.span.article.div.div.h4.text
-        url = 'https://www.imi.europa.eu' + item.div.span.article.div.div.h4.a['href']
-        titles.append(title)
-        urls.append(url)
-
-    list_item = soup.find_all("span", {"class": "published-date"})
-    for item in list_item:
-        pub_date = item.text
-        pub_dates.append(pub_date)
-
-    list_item = soup.find_all("div", {"class": "field field--name-body field--type-text-with-summary field--label-hidden field--item"})
-    for item in list_item:
-        snippet = item.text
-        snippets.append(snippet)
-
-    temp_df = create_df(titles, pub_dates, snippets, urls, dayfirst=True)
-
-    df = df.append(temp_df)
-
-    time.sleep(2)
-
-    return df
-
 ## INTERACT is still missing
 def interreg(url, driver, max_date):
 
