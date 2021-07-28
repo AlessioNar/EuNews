@@ -2,6 +2,8 @@ from scraper import Scraper
 import bs4
 import time
 
+
+## I don't know why but it does not take up all the articles but only the first 4
 class EEAScraper(Scraper):
 
     def __init__(self, driver, max_date):
@@ -12,7 +14,7 @@ class EEAScraper(Scraper):
         self.url = 'https://www.eea.europa.eu/'
 
     def std_date(self, to_date):
-        return self.std_date_general(to_date)
+        return self.std_date_day(to_date)
 
     def parse(self):
 
@@ -27,12 +29,13 @@ class EEAScraper(Scraper):
             list_item = soup.find_all('div', {'class':'tileItem visualIEFloatFix'})
             for item in list_item:
                 title = item.a.img['title']
-                link = item.a['href']
-                pub_date = item.div.span.text
+                url = item.a['href']
+                pub_date = item.find('span', {'class':'date'})
+                pub_date = pub_date.text.strip()
                 pub_date = self.std_date(pub_date)
                 snippet = item.p.span.text
                 titles.append(title)
-                links.append(link)
+                urls.append(url)
                 pub_dates.append(pub_date)
                 snippets.append(snippet)
 
