@@ -17,6 +17,7 @@ from parsers.espon import EsponScraper
 from parsers.eucommission import EUCommissionScraper
 from parsers.euparliament import EUParliamentScraper
 from parsers.euregha import EureghaScraper
+from parsers.europeanagency import EuropeanAgencyScraper
 
 
 from db_operations import *
@@ -46,8 +47,8 @@ driver = webdriver.Firefox()
 
 #test = EUCommissionScraper(driver, target_date)
 #test = EUParliamentScraper(driver, target_date)
-test = EureghaScraper(driver, target_date)
-
+#test = EureghaScraper(driver, target_date)
+test = EuropeanAgencyScraper(driver, target_date)
 
 df = test.scrape()
 for id, article in df.iterrows():
