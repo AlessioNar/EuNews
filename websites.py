@@ -61,64 +61,6 @@ def espon(url, driver, max_date):
 
     return final_df
 
-## INTERACT is still missing
-def ecgeneric(url, driver, max_date):
-
-    driver.get(url)
-    time.sleep(3)
-    counter = 1
-
-    is_paginated = True
-    df = pd.DataFrame()
-    try:
-        closepopup = driver.find_element_by_xpath("//a[@id='ec-survey-pop-up-body-button-do-not-participate']")
-        closepopup.click()
-    except:
-        print('no survey')
-
-    try:
-        cookies = driver.find_element_by_xpath("//a[@class='cck-actions-button']")
-        cookies.click()
-        closecookies = driver.find_element_by_xpath("//a[@href='#close']")
-        closecookies.click()
-    except:
-        print('no cookies')
-
-    while is_paginated:
-        titles, urls, pub_dates, snippets = initialize_lists()
-
-        container = driver.find_element_by_xpath('//div[@class="view-content"]')
-
-        soup = get_soup(container)
-
-        list_item = soup.find_all("div", {"class": "listing__column-main"})
-        for item in list_item:
-            title = item.div.next_sibling.text.strip()
-            url = item.div.next_sibling.a['href']
-            pub_date = item.div.span.next_sibling.text.strip()
-            snippet = '' #item.find_all('p')
-            #if snippet == '':
-            #    snippet = ''
-            #else:
-            #    snippet = snippet.text.strip()
-
-            titles.append(title)
-            pub_dates.append(pub_date)
-            urls.append(url)
-            snippets.append(snippet)
-        temp_df = create_df(titles, pub_dates, snippets, urls)
-        df = df.append(temp_df)
-
-        if df.iloc[len(df) - 1]['pub_date'] <= max_date:
-            is_paginated = False
-        else:
-            button = driver.find_element_by_xpath("//a[@title='Vai alla pagina successiva']")
-            button.click()
-
-        time.sleep(5)
-
-    return df
-
 def ecitalia(url, driver, max_date):
 
     driver.get(url)

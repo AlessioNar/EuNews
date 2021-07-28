@@ -25,6 +25,7 @@ from parsers.interreg import InterregScraper
 from parsers.jrc import JRCScraper
 from parsers.promis import PromisScraper
 from parsers.ecgeneric import ECGenericScraper
+from parsers.ecitalia import ECItaliaScraper
 
 
 from db_operations import *
@@ -64,7 +65,8 @@ driver = webdriver.Firefox()
 #test = PromisScraper(driver, target_date)
 
 # This does not work
-test = ECGenericScraper(driver, target_date)
+#test = ECGenericScraper(driver, target_date)
+#test = ECItaliaScraper(driver, target_date)
 
 
 
