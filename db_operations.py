@@ -11,21 +11,22 @@ def create_table():
         pub_date date NULL,
         snippet text,
         url VARCHAR(255),
+        source VARCHAR(255),
 		CONSTRAINT UNIQUE(title, url),
 		PRIMARY KEY (id)
     );""")
     conn.commit()
 
 # Takes as inputs the fields of each article and inserts them in a MySQL database
-def insert_articles(title, pub_date, snippet, url):
+def insert_articles(title, pub_date, snippet, url, source):
 
 	# Establishing the connection
 	conn = connection()
 	cursor = conn.cursor()
 
 	# Insert query
-	cursor.execute(f"""INSERT IGNORE INTO articles(title, pub_date, snippet, url)
-					VALUES(%s,%s,%s,%s);""", (title, pub_date, snippet, url))
+	cursor.execute(f"""INSERT IGNORE INTO articles(title, pub_date, snippet, url, source)
+					VALUES(%s,%s,%s,%s,%s);""", (title, pub_date, snippet, url, source))
 
 	# Commit and close
 	conn.commit()
