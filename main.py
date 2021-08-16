@@ -7,7 +7,7 @@ from db_operations import *
 
 create_table()
 
-target_date = date(2021, 8, 2)
+target_date = date(2021, 8, 9)
 
 sources = pd.read_csv('sources.csv')
 sources = sources.loc[sources['status'] == 'active']
@@ -31,6 +31,10 @@ for index, website in sources.iterrows():
         scraper = EEAScraper(driver, target_date)
     elif website['website'] == 'earlall':
         scraper = EarlAllScraper(driver, target_date)
+    elif website['website'] == 'ecgeneric':
+        scraper = ECGenericScraper(driver, target_date)
+    elif website['website'] == 'ecitalia':
+        scraper = ECItaliaScraper(driver, target_date)
     elif website['website'] == 'eib':
         scraper = EIBScraper(driver, target_date)
     elif website['website'] == 'eif':

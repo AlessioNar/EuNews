@@ -1,4 +1,5 @@
 from db_credentials import connection
+import pandas as pd
 
 # Creates articles table
 def create_table():
@@ -32,3 +33,13 @@ def insert_articles(title, pub_date, snippet, url, source):
 	conn.commit()
 	cursor.close()
 	conn.close()
+
+def get_newsletter_articles(date):
+    conn = connection()
+    cursor = conn.cursor()
+    cursor.execute(f"""SELECT title, pub_date, url, source FROM articles WHERE pub_date >= %s;""", (date,))
+    records = pd.DataFrame(cursor.fetchall(), columns = ['title', 'pub_date', 'url', 'source'])
+    cursor.close()
+    conn.close()
+
+    return records

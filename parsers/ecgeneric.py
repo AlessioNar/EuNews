@@ -55,6 +55,8 @@ class ECGenericScraper(PaginatedScraper):
             for item in list_item:
                 title = item.div.next_sibling.text.strip()
                 url = item.div.next_sibling.a['href']
+                if url[0:20] != 'https://ec.europa.eu':
+                    url = 'https://ec.europa.eu' + url
                 pub_date = item.div.span.next_sibling.text.strip()
                 pub_date = self.std_date(pub_date)
                 snippet = '' #item.find_all('p')

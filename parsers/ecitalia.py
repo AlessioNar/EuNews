@@ -24,10 +24,13 @@ class ECItaliaScraper(PaginatedScraper):
         except:
             print('no survey')
         try:
+            time.sleep(2)
             cookies = driver.find_element_by_xpath(self.cookie_xpath)
             cookies.click()
+            time.sleep(1)
             closecookies = driver.find_element_by_xpath(self.close_cookies_xpath)
             closecookies.click()
+            time.sleep(1)
         except:
             print('Cookies are ok')
 
@@ -52,7 +55,8 @@ class ECItaliaScraper(PaginatedScraper):
                 url = 'https://italy.representation.ec.europa.eu' + item.div.next_sibling.div.next_sibling.a['href']
                 pub_date = item.div.next_sibling.div.time['datetime']
                 pub_date = self.std_date(pub_date)
-                snippet = ''
+                snippet = item.find('div', {'class':'ecl-content-item__description ecl-u-type-paragraph ecl-u-type-color-grey-100 ecl-u-mb-s'})
+                snippet = snippet.text.strip()
                 titles.append(title)
                 pub_dates.append(pub_date)
                 urls.append(url)

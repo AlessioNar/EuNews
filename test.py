@@ -5,73 +5,18 @@ from parsers import *
 
 from db_operations import *
 
-create_table()
+#create_table()
 
 target_date = date(2021, 8, 2)
 
-sources = pd.read_csv('sources.csv')
+#sources = pd.read_csv('sources.csv')
 
 driver = webdriver.Firefox()
 
-for index, website in sources.iterrows():
-    if website['website'] == 'apre':
-        scraper = ApreScraper(driver, target_date)
-    elif website['website'] == 'areflh':
-        scraper = AreflhScraper(driver, target_date)
-    elif website['website'] == 'consigliodeuropait':
-        scraper = ConsiglioDEuropaITScraper(driver, target_date)
-    elif website['website'] == 'consiglioeuropeo':
-        scraper = ConsiglioEuropeo(driver, target_date)
-    elif website['website'] == 'cor':
-        scraper = CORScraper(driver, target_date)
-    elif website['website'] == 'cpmr':
-        scraper = CPMRScraper(driver, target_date)
-    elif website['website'] == 'eea':
-        scraper = EEAScraper(driver, target_date)
-    elif website['website'] == 'earlall':
-        scraper = EarlAllScraper(driver, target_date)
-    elif website['website'] == 'eib':
-        scraper = EIBScraper(driver, target_date)
-    elif website['website'] == 'eif':
-        scraper = EIFScraper(driver, target_date)
-    elif website['website'] == 'eit':
-        scraper = EITScraper(driver, target_date)
-    elif website['website'] == 'enicbcmed':
-        scraper = EniCbcMedScraper(driver, target_date)
-    #This does not work
-    elif website['website'] == 'espon':
-        scraper = EsponScraper(driver, target_date)
-    elif website['website'] == 'eucommission':
-        scraper = EUCommissionScraper(driver, target_date)
-    elif website['website'] == 'euparliament':
-        scraper = EUParliamentScraper(driver, target_date)
-    elif website['website'] == 'euregha':
-        scraper = EureghaScraper(driver, target_date)
-    elif website['website'] == 'europeanagency':
-        scraper = EuropeanAgencyScraper(driver, target_date)
-    elif website['website'] == 'eurostat':
-        scraper = EurostatScraper(driver, target_date)
-    elif website['website'] == 'eusalp':
-        scraper = EusalpScraper(driver, target_date)
-    elif website['website'] == 'imi':
-        scraper = IMIScraper(driver, target_date)
-    elif website['website'] == 'interreg':
-        scraper = InterregScraper(driver, target_date)
-    elif website['website'] == 'jrc':
-        scraper = JRCScraper(driver, target_date)
-    elif website['website'] == 'promis':
-        scraper = PromisScraper(driver, target_date)
-    else:
-        break
+#This does not work
+scraper = ECItaliaScraper(driver, target_date)
 
-# This does not work
-#scraper = ECGenericScraper(driver, target_date)
-#scraper = ECItaliaScraper(driver, target_date)
+df = scraper.scrape()
 
-    df = scraper.scrape()
-
-    # Here i need to put the source
-    for id, article in df.iterrows():
-        insert_articles(article['title'], article['pub_date'].strftime("%Y-%m-%d"), article['snippet'], article['url'])
-
+print(df)
 driver.close()
