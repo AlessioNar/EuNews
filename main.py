@@ -1,52 +1,74 @@
-import pandas as pd
-from navigate import get_article_list
-from parse import scrape_articles
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from time import sleep
-import bs4
-import websites
+from datetime import date
+import pandas as pd
+from parsers import *
 
-#url = sources['link'].iloc[0]
+from db_operations import *
+
+create_table()
+
+target_date = date(2021, 8, 2)
+
 sources = pd.read_csv('sources.csv')
-sources = pd.DataFrame(sources.iloc[2]).transpose()
-for i, source in sources.iterrows():
-    if source['website'] == 'apre':
-        driver = webdriver.Firefox()
-        df = websites.apre(source['link'], driver)
-        driver.close()
-    elif source['website'] == 'areflh':
-        driver = webdriver.Firefox()
-        df = websites.areflh(source['link'], driver)
-        driver.close()
-    elif source['website'] == 'consigliodeuropait':
-        driver = webdriver.Firefox()
-        df = websites.consigliodeuropait(source['link'], driver)
-        df = websites.consigliodeuropait(url, driver)
-        print(df)
+sources = sources.loc[sources['status'] == 'active']
 
-    try:
-        if source['status'] == 'active':
+driver = webdriver.Firefox()
 
-            print(source['website'])
+for index, website in sources.iterrows():
+    if website['website'] == 'apre':
+        scraper = ApreScraper(driver, target_date)
+    elif website['website'] == 'areflh':
+        scraper = AreflhScraper(driver, target_date)
+    elif website['website'] == 'consigliodeuropait':
+        scraper = ConsiglioDEuropaITScraper(driver, target_date)
+    elif website['website'] == 'consiglioeuropeo':
+        scraper = ConsiglioEuropeo(driver, target_date)
+    elif website['website'] == 'cor':
+        scraper = CORScraper(driver, target_date)
+    elif website['website'] == 'cpmr':
+        scraper = CPMRScraper(driver, target_date)
+    elif website['website'] == 'eea':
+        scraper = EEAScraper(driver, target_date)
+    elif website['website'] == 'earlall':
+        scraper = EarlAllScraper(driver, target_date)
+    elif website['website'] == 'eib':
+        scraper = EIBScraper(driver, target_date)
+    elif website['website'] == 'eif':
+        scraper = EIFScraper(driver, target_date)
+    elif website['website'] == 'eit':
+        scraper = EITScraper(driver, target_date)
+    elif website['website'] == 'enicbcmed':
+        scraper = EniCbcMedScraper(driver, target_date)
+    #This does not work
+    elif website['website'] == 'espon':
+        scraper = EsponScraper(driver, target_date)
+    elif website['website'] == 'eucommission':
+        scraper = EUCommissionScraper(driver, target_date)
+    elif website['website'] == 'euparliament':
+        scraper = EUParliamentScraper(driver, target_date)
+    elif website['website'] == 'euregha':
+        scraper = EureghaScraper(driver, target_date)
+    elif website['website'] == 'europeanagency':
+        scraper = EuropeanAgencyScraper(driver, target_date)
+    elif website['website'] == 'eurostat':
+        scraper = EurostatScraper(driver, target_date)
+    elif website['website'] == 'eusalp':
+        scraper = EusalpScraper(driver, target_date)
+    elif website['website'] == 'imi':
+        scraper = IMIScraper(driver, target_date)
+    elif website['website'] == 'interreg':
+        scraper = InterregScraper(driver, target_date)
+    elif website['website'] == 'jrc':
+        scraper = JRCScraper(driver, target_date)
+    elif website['website'] == 'promis':
+        scraper = PromisScraper(driver, target_date)
+    else:
+        break
 
-            # Getting html page
-            html_page = get_article_list(source['link'], source['website'])
-            #html_page = get_article_list(url, sources['website'].iloc[0])
+    df = scraper.scrape()
 
-            # Parse html
-            df = scrape_articles(html_page, source['website'])
-            #df = scrape_articles(html_page, sources['website'].iloc[0])
-            df_length = len(df.index)
+    # Here i need to put the source
+    for id, article in df.iterrows():
+        insert_articles(article['title'], article['pub_date'].strftime("%Y-%m-%d"), article['snippet'], article['url'], website['website'])
 
-            if df['pub_date'].iloc[df_length - 1] <= start:
-                #stop
-            else:
-                #go on with pagination
-
-            if i != 0:
-                df.to_csv('newsletter.csv', mode = 'a', header = False, index = False)
-            else:
-                df.to_csv('newsletter.csv', mode = 'a', header = True, index = False)
-    except:
-        print('There has been an error')
+driver.close()

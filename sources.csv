@@ -4,7 +4,7 @@ areflh,http://www.areflh.org/index.php?lang=en,active
 consigliodeuropait,https://www.coe.int/it/web/portal/full-news,active
 consiglioeuropeo,https://www.consilium.europa.eu/it/press/press-releases/,active
 cor,https://cor.europa.eu/it/news/Pages/default.aspx,active
-cprm,https://cpmr.org/news/,active
+cpmr,https://cpmr.org/news/,active
 earlall,https://www.earlall.eu/news/,active
 ecgeneric,https://ec.europa.eu/info/news_it?department=All&field_announcement_type_value_i18n=All&persons=All&research_areas=All,active
 ecitalia,https://italy.representation.ec.europa.eu/notizie-ed-eventi/notizie-0_it,active
@@ -35,9 +35,7 @@ ectrade,https://trade.ec.europa.eu/doclib/press/,todo
 first_eventi,https://first.aster.it/_aster_/eventi,todo
 fse,https://ec.europa.eu/esf/main.jsp?catId=67&langId=it,todo
 interact,https://www.interact-eu.net/#news,todo
-interact,https://www.interact-eu.net/#news,todo
 necstour,https://necstour.eu/news,todo
-parlamento_europeo_thinktank_eventi,https://www.europarl.europa.eu/thinktank/it/upcomingevents.html,todo
 parlamento_europeo_thinktank_eventi,https://www.europarl.europa.eu/thinktank/it/upcomingevents.html,todo
 pon,http://www.istruzione.it/pon/,todo
 urbact,https://urbact.eu/urbact-news,todo
