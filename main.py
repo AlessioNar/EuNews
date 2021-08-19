@@ -66,6 +66,10 @@ for index, website in sources.iterrows():
         scraper = JRCScraper(driver, target_date)
     elif website['website'] == 'promis':
         scraper = PromisScraper(driver, target_date)
+    elif website['website'] == 'eceducation':
+        scraper = ECEducationScraper(driver, target_date)
+    elif website['website'] == 'ecoceans':
+        scraper = ECOceansScraper(driver, target_date)
     else:
         break
 

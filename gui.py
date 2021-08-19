@@ -126,7 +126,7 @@ class MainWindow(QtWidgets.QMainWindow):
         file_menu.addAction('Show PDF', self.render_pdf, 'CTRL+Q')
 
         edit_menu = menu.addMenu('Edit')
-        edit_menu.addAction('Insert Below', self.insert_below, 'CTRL+L')
+        edit_menu.addAction('Insert Below', self.insert_below, 'CTRL+A')
         edit_menu.addAction('Remove Row(s)', self.remove_rows, 'CTRL+W')
 
         # Render the csv file
@@ -166,7 +166,7 @@ class MainWindow(QtWidgets.QMainWindow):
         selected = self.tableview.selectedIndexes()
         if selected:
             model = self.tableview.model()
-            index = model.index(selected[0].row(), 3)
+            index = model.index(selected[0].row(), 2)
 
             url = str(model.data(index, QtCore.Qt.DisplayRole))
             ## This works I just need to find the url

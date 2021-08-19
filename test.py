@@ -14,7 +14,7 @@ target_date = date(2021, 8, 2)
 driver = webdriver.Firefox()
 
 #This does not work
-scraper = ECItaliaScraper(driver, target_date)
+scraper = ECOceansScraper(driver, target_date)
 
 df = scraper.scrape()
 
