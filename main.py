@@ -17,6 +17,8 @@ driver = webdriver.Firefox()
 for index, website in sources.iterrows():
     if website['website'] == 'apre':
         scraper = ApreScraper(driver, target_date)
+    elif website['website'] == 'apre_eventi':
+        scraper = ApreEventScraper(driver, target_date)    
     elif website['website'] == 'areflh':
         scraper = AreflhScraper(driver, target_date)
     elif website['website'] == 'consigliodeuropait':

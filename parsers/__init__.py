@@ -1,4 +1,5 @@
 from parsers.apre import ApreScraper
+from parsers.apre_eventi import ApreEventScraper
 from parsers.areflh import AreflhScraper
 from parsers.consigliodeuropait import ConsiglioDEuropaITScraper
 from parsers.consiglioeuropeo import ConsiglioEuropeo
