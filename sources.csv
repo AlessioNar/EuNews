@@ -27,9 +27,9 @@ promis,https://www.promisalute.it/servizi/notizie/notizie_fase01.aspx?categoriaV
 necstour,http://www.necstour.eu/event,broken
 eceducation,https://ec.europa.eu/education/news_en,active
 ecoceans,https://ec.europa.eu/oceans-and-fisheries/news_en,active
-ec_politicheregionali,https://ec.europa.eu/regional_policy/en/newsroom/news,todo
+ec_politicheregionali,https://ec.europa.eu/regional_policy/en/newsroom/news,active
 ec_politicheregionali_it,https://ec.europa.eu/regional_policy/it/newsroom/news,todo
-ecrea,https://ec.europa.eu/chafea/agri/newsroom-and-events/news,todo
+ecrea,https://ec.europa.eu/chafea/agri/newsroom-and-events/news,active
 ecsalute,https://ec.europa.eu/health/latest_updates_it,todo
 ectrade,https://trade.ec.europa.eu/doclib/press/,todo
 first_eventi,https://first.aster.it/_aster_/eventi,todo
@@ -54,3 +54,13 @@ alda,https://www.alda-europe.eu/,todo
 eurohealthnet,https://eurohealthnet.eu/,todo
 eriaff,https://eriaff2014.blogspot.com/,todo
 arepo,http://www.arepoquality.eu/it,todo
+all4climate,https://all4climate2021.org/,todo
+jrc_events,https://ec.europa.eu/jrc/en/events,todo
+eit_events,https://eit.europa.eu/news-events/events,todo
+eitdigital,https://www.eitdigital.eu/newsroom/,todo
+eitfood,https://www.eitfood.eu/news/,todo
+eithealth,https://eithealth.eu/news-and-views/news/,todo
+eitinnoenergy,https://www.innoenergy.com/news-events/,todo
+eitmanufacturing,https://eitmanufacturing.eu/newsroom-media/,todo
+eitrawmaterials,https://eitrawmaterials.eu/,todo
+eiturbanmobility,https://www.eiturbanmobility.eu/,todo

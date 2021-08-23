@@ -7,7 +7,7 @@ from db_operations import *
 
 create_table()
 
-target_date = date(2021, 8, 9)
+target_date = date(2021, 8, 17)
 
 sources = pd.read_csv('sources.csv')
 sources = sources.loc[sources['status'] == 'active']
@@ -70,6 +70,13 @@ for index, website in sources.iterrows():
         scraper = ECEducationScraper(driver, target_date)
     elif website['website'] == 'ecoceans':
         scraper = ECOceansScraper(driver, target_date)
+    elif website['website'] == 'ec_politicheregionali':
+        scraper = ECRegionalPolicyScraper(driver, target_date)
+    # I have to find a way to load the website
+    #elif website['website'] == 'ec_politicheregionali_it':
+    #    scraper = ECRegionalPolicyScraper(driver, target_date)
+    elif website['website'] == 'ecrea':
+        scraper = ECReaScraper(driver, target_date)
     else:
         break
 

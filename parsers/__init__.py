@@ -23,3 +23,7 @@ from parsers.jrc import JRCScraper
 from parsers.promis import PromisScraper
 from parsers.ecgeneric import ECGenericScraper
 from parsers.ecitalia import ECItaliaScraper
+from parsers.eceducation import ECEducationScraper
+from parsers.ecoceans import ECOceansScraper
+from parsers.ec_regionalpolicy import ECRegionalPolicyScraper
+from parsers.ecrea import ECReaScraper

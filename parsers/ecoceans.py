@@ -53,7 +53,7 @@ class ECOceansScraper(PaginatedScraper):
             soup = self.extract_html()
             list_item = soup.find_all("article")
             for item in list_item:
-                url = 'https://ec.europa.it' + item.a['href']
+                url = 'https://ec.europa.eu' + item.a['href']
                 title = item.a.text.strip()
                 pub_date = item.time['datetime']
                 pub_date = self.std_date(pub_date)
