@@ -4,12 +4,16 @@ from parsers.areflh import AreflhScraper
 from parsers.consigliodeuropait import ConsiglioDEuropaITScraper
 from parsers.consiglioeuropeo import ConsiglioEuropeo
 from parsers.cor import CORScraper
+from parsers.cor_events import COREventScraper
 from parsers.cpmr import CPMRScraper
 from parsers.earlall import EarlAllScraper
+from parsers.earlall_eventi import EarlAllEventScraper
 from parsers.eea import EEAScraper
 from parsers.eib import EIBScraper
+from parsers.eib_eventi import EIBEventScraper
 from parsers.eif import EIFScraper
 from parsers.eit import EITScraper
+from parsers.eit_eventi import EITEventScraper
 from parsers.enicbcmed import EniCbcMedScraper
 from parsers.espon import EsponScraper
 from parsers.eucommission import EUCommissionScraper
@@ -20,7 +24,9 @@ from parsers.eurostat import EurostatScraper
 from parsers.eusalp import EusalpScraper
 from parsers.imi import IMIScraper
 from parsers.interreg import InterregScraper
+from parsers.interreg_eventi import InterregEventScraper
 from parsers.jrc import JRCScraper
+from parsers.jrc_eventi import JRCEventScraper
 from parsers.promis import PromisScraper
 from parsers.ecgeneric import ECGenericScraper
 from parsers.ecitalia import ECItaliaScraper

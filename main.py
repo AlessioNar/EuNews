@@ -18,7 +18,7 @@ for index, website in sources.iterrows():
     if website['website'] == 'apre':
         scraper = ApreScraper(driver, target_date)
     elif website['website'] == 'apre_eventi':
-        scraper = ApreEventScraper(driver, target_date)    
+        scraper = ApreEventScraper(driver, target_date)
     elif website['website'] == 'areflh':
         scraper = AreflhScraper(driver, target_date)
     elif website['website'] == 'consigliodeuropait':
@@ -27,6 +27,8 @@ for index, website in sources.iterrows():
         scraper = ConsiglioEuropeo(driver, target_date)
     elif website['website'] == 'cor':
         scraper = CORScraper(driver, target_date)
+    elif website['website'] == 'cor_eventi':
+        scraper = COREventScraper(driver, target_date)
     elif website['website'] == 'cpmr':
         scraper = CPMRScraper(driver, target_date)
     elif website['website'] == 'eea':

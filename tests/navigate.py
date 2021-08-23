@@ -9,7 +9,7 @@ target_date = date(2021, 8, 16)
 
 driver = webdriver.Firefox()
 
-test = ApreEventScraper(driver, target_date)
+test = JRCEventScraper(driver, target_date)
 
 test.navigate()
 test.preprocess()
