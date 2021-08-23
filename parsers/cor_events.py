@@ -11,10 +11,13 @@ class COREventScraper(Scraper):
         self.container_xpath = '//div[@class="cbq-layout-main"]'
         self.url = 'https://cor.europa.eu/it/events/Pages/default.aspx'
 
-    def cookies_removal(self):
-        refuse = self.driver.find_element_by_xpath(self.cookie_xpath)
-        refuse.click()
-        time.sleep(1)
+    #def cookies_removal(self):
+    #    try:
+    #        refuse = self.driver.find_element_by_xpath(self.cookie_xpath)
+    #        refuse.click()
+    #        time.sleep(1)
+    #    except:
+    #        pass
 
     def std_date(self, to_date):
         return self.std_date_day(to_date)

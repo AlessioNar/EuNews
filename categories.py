@@ -33,6 +33,6 @@ dataframe['section'] = dataframe['section'].astype(int)
 dataframe['section_id'] = dataframe['section']
 dataframe['section'] = dataframe['section'].map(categories)
 
-dataframe = dataframe.sort_values(by=['section_id', 'title'])
+dataframe = dataframe.sort_values(by=['section_id', 'pub_date','title'])
 
 dataframe.to_csv(csv, index = False)

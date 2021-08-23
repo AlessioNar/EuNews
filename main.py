@@ -15,6 +15,7 @@ sources = sources.loc[sources['status'] == 'active']
 driver = webdriver.Firefox()
 
 for index, website in sources.iterrows():
+    print(website['website'])
     if website['website'] == 'apre':
         scraper = ApreScraper(driver, target_date)
     elif website['website'] == 'apre_eventi':
@@ -27,7 +28,7 @@ for index, website in sources.iterrows():
         scraper = ConsiglioEuropeo(driver, target_date)
     elif website['website'] == 'cor':
         scraper = CORScraper(driver, target_date)
-    elif website['website'] == 'cor_eventi':
+    elif website['website'] == 'cor_events':
         scraper = COREventScraper(driver, target_date)
     elif website['website'] == 'cpmr':
         scraper = CPMRScraper(driver, target_date)
@@ -35,16 +36,22 @@ for index, website in sources.iterrows():
         scraper = EEAScraper(driver, target_date)
     elif website['website'] == 'earlall':
         scraper = EarlAllScraper(driver, target_date)
+    elif website['website'] == 'earlall_eventi':
+        scraper = EarlAllEventScraper(driver, target_date)
     elif website['website'] == 'ecgeneric':
         scraper = ECGenericScraper(driver, target_date)
     elif website['website'] == 'ecitalia':
         scraper = ECItaliaScraper(driver, target_date)
     elif website['website'] == 'eib':
         scraper = EIBScraper(driver, target_date)
+    elif website['website'] == 'eib_eventi':
+        scraper = EIBEventScraper(driver, target_date)
     elif website['website'] == 'eif':
         scraper = EIFScraper(driver, target_date)
     elif website['website'] == 'eit':
         scraper = EITScraper(driver, target_date)
+    elif website['website'] == 'eit_eventi':
+        scraper = EITEventScraper(driver, target_date)
     elif website['website'] == 'enicbcmed':
         scraper = EniCbcMedScraper(driver, target_date)
     #This does not work
@@ -66,8 +73,12 @@ for index, website in sources.iterrows():
         scraper = IMIScraper(driver, target_date)
     elif website['website'] == 'interreg':
         scraper = InterregScraper(driver, target_date)
+    elif website['website'] == 'interreg_eventi':
+        scraper = InterregEventScraper(driver, target_date)
     elif website['website'] == 'jrc':
         scraper = JRCScraper(driver, target_date)
+    elif website['website'] == 'jrc_eventi':
+        scraper = JRCEventScraper(driver, target_date)
     elif website['website'] == 'promis':
         scraper = PromisScraper(driver, target_date)
     elif website['website'] == 'eceducation':
@@ -82,12 +93,15 @@ for index, website in sources.iterrows():
     elif website['website'] == 'ecrea':
         scraper = ECReaScraper(driver, target_date)
     else:
-        break
+        pass
 
     df = scraper.scrape()
 
     # Here i need to put the source
     for id, article in df.iterrows():
-        insert_articles(article['title'], article['pub_date'].strftime("%Y-%m-%d"), article['snippet'], article['url'], website['website'])
+        try:
+            insert_articles(article['title'], article['pub_date'].strftime("%Y-%m-%d"), article['snippet'], article['url'], website['website'])
+        except:
+            insert_articles(article['title'], date(2021,12,31).strftime("%Y-%m-%d"), article['snippet'], article['url'], website['website'])
 
 driver.close()
