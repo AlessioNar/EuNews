@@ -49,6 +49,7 @@ class Scraper(ABC):
 
     def create_df(self, titles, pub_dates, snippets, urls):
         df = pd.DataFrame(list(zip(titles, pub_dates, snippets, urls)), columns =['title', 'pub_date', 'snippet', 'url'])
+        df.drop_duplicates()
         #df['pub_date'] = df['pub_date'].apply(self.std_date)
         return df
 
@@ -67,7 +68,12 @@ class Scraper(ABC):
     def scrape(self):
         self.navigate()
         self.preprocess()
-        self.cookies_removal()
+
+        try:
+            self.cookies_removal()
+        except:
+            print("No cookie bar")
+
         titles, pub_dates, snippets, urls = self.parse()
         return self.create_df(titles, pub_dates, snippets, urls)
 
@@ -77,3 +83,29 @@ class PaginatedScraper(Scraper):
         button = self.driver.find_element_by_xpath(self.next_xpath)
         button.click()
         time.sleep(2)
+
+class EventScraper(Scraper):
+    def initialize_lists(self):
+        titles = []
+        urls = []
+        start_dates = []
+        end_dates = []
+        snippets = []
+        return titles, urls, start_dates, end_dates, snippets
+
+    def create_df(self, titles, start_date, end_date, snippets, urls):
+        df = pd.DataFrame(list(zip(titles, start_date, end_date, snippets, urls)), columns =['title', 'start_date', 'end_date', 'snippet', 'url'])
+        #df['pub_date'] = df['pub_date'].apply(self.std_date)
+        return df
+
+    def scrape(self):
+        self.navigate()
+        self.preprocess()
+
+        try:
+            self.cookies_removal()
+        except:
+            print("No cookie bar")
+
+        titles, snippets, start_dates, end_dates, urls = self.parse()
+        return self.create_df(titles, start_dates, end_dates, snippets, urls)

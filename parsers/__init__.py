@@ -1,5 +1,4 @@
-from parsers.apre import ApreScraper
-from parsers.apre_eventi import ApreEventScraper
+from parsers.apre import ApreScraper, ApreEventScraper
 from parsers.areflh import AreflhScraper
 from parsers.consigliodeuropait import ConsiglioDEuropaITScraper
 from parsers.consiglioeuropeo import ConsiglioEuropeo
@@ -34,3 +33,4 @@ from parsers.eceducation import ECEducationScraper
 from parsers.ecoceans import ECOceansScraper
 from parsers.ec_regionalpolicy import ECRegionalPolicyScraper
 from parsers.ecrea import ECReaScraper
+from parsers.ecdigitalstrategy import ECDigitalEventScraper

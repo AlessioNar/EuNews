@@ -2,12 +2,11 @@ from selenium import webdriver
 from datetime import date
 import pandas as pd
 from parsers import *
-
 from db_operations import *
 
-create_table()
+create_articles_table()
 
-target_date = date(2021, 8, 17)
+target_date = date(2021, 8, 31)
 
 sources = pd.read_csv('sources.csv')
 sources = sources.loc[sources['status'] == 'active']
@@ -18,8 +17,6 @@ for index, website in sources.iterrows():
     print(website['website'])
     if website['website'] == 'apre':
         scraper = ApreScraper(driver, target_date)
-    elif website['website'] == 'apre_eventi':
-        scraper = ApreEventScraper(driver, target_date)
     elif website['website'] == 'areflh':
         scraper = AreflhScraper(driver, target_date)
     elif website['website'] == 'consigliodeuropait':
@@ -28,30 +25,22 @@ for index, website in sources.iterrows():
         scraper = ConsiglioEuropeo(driver, target_date)
     elif website['website'] == 'cor':
         scraper = CORScraper(driver, target_date)
-    elif website['website'] == 'cor_events':
-        scraper = COREventScraper(driver, target_date)
     elif website['website'] == 'cpmr':
         scraper = CPMRScraper(driver, target_date)
     elif website['website'] == 'eea':
         scraper = EEAScraper(driver, target_date)
     elif website['website'] == 'earlall':
         scraper = EarlAllScraper(driver, target_date)
-    elif website['website'] == 'earlall_eventi':
-        scraper = EarlAllEventScraper(driver, target_date)
     elif website['website'] == 'ecgeneric':
         scraper = ECGenericScraper(driver, target_date)
     elif website['website'] == 'ecitalia':
         scraper = ECItaliaScraper(driver, target_date)
     elif website['website'] == 'eib':
         scraper = EIBScraper(driver, target_date)
-    elif website['website'] == 'eib_eventi':
-        scraper = EIBEventScraper(driver, target_date)
     elif website['website'] == 'eif':
         scraper = EIFScraper(driver, target_date)
     elif website['website'] == 'eit':
         scraper = EITScraper(driver, target_date)
-    elif website['website'] == 'eit_eventi':
-        scraper = EITEventScraper(driver, target_date)
     elif website['website'] == 'enicbcmed':
         scraper = EniCbcMedScraper(driver, target_date)
     #This does not work
@@ -73,12 +62,8 @@ for index, website in sources.iterrows():
         scraper = IMIScraper(driver, target_date)
     elif website['website'] == 'interreg':
         scraper = InterregScraper(driver, target_date)
-    elif website['website'] == 'interreg_eventi':
-        scraper = InterregEventScraper(driver, target_date)
     elif website['website'] == 'jrc':
         scraper = JRCScraper(driver, target_date)
-    elif website['website'] == 'jrc_eventi':
-        scraper = JRCEventScraper(driver, target_date)
     elif website['website'] == 'promis':
         scraper = PromisScraper(driver, target_date)
     elif website['website'] == 'eceducation':
@@ -87,9 +72,6 @@ for index, website in sources.iterrows():
         scraper = ECOceansScraper(driver, target_date)
     elif website['website'] == 'ec_politicheregionali':
         scraper = ECRegionalPolicyScraper(driver, target_date)
-    # I have to find a way to load the website
-    #elif website['website'] == 'ec_politicheregionali_it':
-    #    scraper = ECRegionalPolicyScraper(driver, target_date)
     elif website['website'] == 'ecrea':
         scraper = ECReaScraper(driver, target_date)
     else:
@@ -102,6 +84,6 @@ for index, website in sources.iterrows():
         try:
             insert_articles(article['title'], article['pub_date'].strftime("%Y-%m-%d"), article['snippet'], article['url'], website['website'])
         except:
-            insert_articles(article['title'], date(2021,12,31).strftime("%Y-%m-%d"), article['snippet'], article['url'], website['website'])
+            print(f'Error when inserting article %s from %s', article['title'], website['website'])
 
 driver.close()
